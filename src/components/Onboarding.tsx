@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import logo from "@/assets/logo.png";
+import dogPaws from "@/assets/dog-paws.png";
 import dogFull from "@/assets/dog-full.png";
 
 const generateCode = () => String(Math.floor(100000 + Math.random() * 900000));
@@ -25,9 +25,13 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
-      {/* Logo */}
+      {/* Animated Dog */}
       <div className="animate-pop-in mb-6">
-        <img src={logo} alt="DogoLog" className="w-36 h-36 mx-auto animate-breathe" />
+        <img 
+          src={dogPaws} 
+          alt="DogoLog Piesek" 
+          className="w-40 h-40 mx-auto animate-dog-bounce" 
+        />
       </div>
 
       {step === 0 && (
