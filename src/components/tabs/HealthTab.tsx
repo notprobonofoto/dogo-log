@@ -1,0 +1,155 @@
+import { useState } from "react";
+import { useApp } from "@/contexts/AppContext";
+import dogFull from "@/assets/dog-full.png";
+import { HeartPulse, Plus, Check, Trash2 } from "lucide-react";
+
+const today = () => new Date().toISOString().split("T")[0];
+
+const EVENT_TYPES = [
+  { value: "weterynarz" as const, label: "🩺 Weterynarz" },
+  { value: "groomer" as const, label: "✂️ Groomer" },
+  { value: "szczepienie" as const, label: "💉 Szczepienie" },
+  { value: "cieczka_start" as const, label: "🔴 Cieczka — początek" },
+  { value: "cieczka_koniec" as const, label: "🟢 Cieczka — koniec" },
+  { value: "inne" as const, label: "📝 Inne" },
+];
+
+const HealthTab = () => {
+  const { data, addHealthEvent, removeHealthEvent } = useApp();
+  const [showForm, setShowForm] = useState(false);
+  const [dogId, setDogId] = useState("");
+  const [eventType, setEventType] = useState(EVENT_TYPES[0].value);
+  const [note, setNote] = useState("");
+  const [nextVisit, setNextVisit] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = () => {
+    if (!dogId) return;
+    addHealthEvent({ dogId, date: today(), type: eventType, note: note || undefined, nextVisit: nextVisit || undefined });
+    setSuccess(true);
+    setTimeout(() => { setSuccess(false); setShowForm(false); setDogId(""); setNote(""); setNextVisit(""); }, 1500);
+  };
+
+  const upcoming = data.healthEvents.filter((h) => h.nextVisit && h.nextVisit >= today()).sort((a, b) => (a.nextVisit! > b.nextVisit! ? 1 : -1));
+  const activeHeats = data.healthEvents.filter((h) => h.type === "cieczka_start" && !data.healthEvents.some((e) => e.type === "cieczka_koniec" && e.dogId === h.dogId && e.date > h.date));
+
+  return (
+    <div className="min-h-screen pb-20 px-4 pt-safe">
+      <div className="flex items-center justify-center gap-3 pt-4 mb-2">
+        <h1 className="text-xl font-extrabold text-foreground">Zdrowie</h1>
+      </div>
+      <div className="flex justify-center mb-4">
+        <img src={dogFull} alt="" className="w-24 h-24 animate-float" />
+      </div>
+
+      {/* Active heats */}
+      {activeHeats.length > 0 && (
+        <div className="bg-destructive/10 rounded-xl p-3 mb-4 animate-pulse-soft">
+          <p className="font-bold text-destructive text-sm">🔴 Aktywna cieczka</p>
+          {activeHeats.map((h) => (
+            <p key={h.id} className="text-sm text-foreground">{data.dogs.find((d) => d.id === h.dogId)?.name} — od {h.date}</p>
+          ))}
+        </div>
+      )}
+
+      {!showForm && (
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-destructive/80 text-destructive-foreground font-bold text-lg transition-all active:scale-95 mb-4 animate-fade-in-up"
+        >
+          <Plus className="w-5 h-5" /> Dodaj zdarzenie
+        </button>
+      )}
+
+      {showForm && (
+        <div className="bg-card rounded-xl p-4 mb-4 space-y-4 animate-slide-up-bounce">
+          {success ? (
+            <div className="text-center py-8 animate-pop-in">
+              <Check className="w-12 h-12 mx-auto text-success mb-2" />
+              <p className="font-bold text-foreground">Zapisano! 💚</p>
+            </div>
+          ) : (
+            <>
+              <h3 className="font-bold text-foreground">Wybierz pieska</h3>
+              {data.dogs.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Najpierw dodaj pieska</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {data.dogs.map((dog) => (
+                    <button key={dog.id} onClick={() => setDogId(dog.id)}
+                      className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${dogId === dog.id ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>
+                      🐕 {dog.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div>
+                <label className="text-sm font-semibold text-foreground">Rodzaj</label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {EVENT_TYPES.map((t) => (
+                    <button key={t.value} onClick={() => setEventType(t.value)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${eventType === t.value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Notatka (opcjonalnie)"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              {(eventType === "weterynarz" || eventType === "groomer" || eventType === "szczepienie") && (
+                <div>
+                  <label className="text-sm font-semibold text-foreground">Następna wizyta</label>
+                  <input type="date" value={nextVisit} onChange={(e) => setNextVisit(e.target.value)}
+                    className="w-full mt-1 rounded-lg border border-border bg-background px-4 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                </div>
+              )}
+              <div className="flex gap-2">
+                <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-lg bg-muted text-muted-foreground font-semibold">Anuluj</button>
+                <button onClick={handleSubmit} disabled={!dogId} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground font-bold disabled:opacity-40">Zapisz</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Upcoming */}
+      {upcoming.length > 0 && (
+        <div className="space-y-2 mb-4">
+          <h3 className="font-bold text-foreground text-sm">📅 Nadchodzące wizyty</h3>
+          {upcoming.map((ev) => (
+            <div key={ev.id} className="flex items-center justify-between bg-card rounded-xl p-3 animate-fade-in-up">
+              <div className="flex items-center gap-2">
+                <HeartPulse className="w-4 h-4 text-primary" />
+                <div>
+                  <p className="font-semibold text-foreground text-sm">{ev.type} — {data.dogs.find((d) => d.id === ev.dogId)?.name}</p>
+                  <p className="text-xs text-muted-foreground">{ev.nextVisit}</p>
+                </div>
+              </div>
+              <button onClick={() => removeHealthEvent(ev.id)} className="p-1 text-muted-foreground"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Recent events */}
+      <div className="space-y-2">
+        <h3 className="font-bold text-foreground text-sm">Historia</h3>
+        {data.healthEvents.length === 0 && <p className="text-sm text-muted-foreground">Brak zdarzeń</p>}
+        {data.healthEvents.slice(-10).reverse().map((ev, i) => (
+          <div key={ev.id} className="flex items-center justify-between bg-card rounded-xl p-3 animate-fade-in-up" style={{ animationDelay: `${i * 60}ms` }}>
+            <div className="flex items-center gap-2">
+              <HeartPulse className="w-4 h-4 text-destructive" />
+              <div>
+                <p className="font-semibold text-foreground text-sm">{ev.type}</p>
+                <p className="text-xs text-muted-foreground">{ev.date} — {data.dogs.find((d) => d.id === ev.dogId)?.name}{ev.note ? ` — ${ev.note}` : ""}</p>
+              </div>
+            </div>
+            <button onClick={() => removeHealthEvent(ev.id)} className="p-1 text-muted-foreground"><Trash2 className="w-4 h-4" /></button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default HealthTab;

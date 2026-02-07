@@ -1,12 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useApp } from "@/contexts/AppContext";
+import Onboarding from "@/components/Onboarding";
+import BottomNav from "@/components/BottomNav";
+import HomeTab from "@/components/tabs/HomeTab";
+import CalendarTab from "@/components/tabs/CalendarTab";
+import WalksTab from "@/components/tabs/WalksTab";
+import FoodTab from "@/components/tabs/FoodTab";
+import HealthTab from "@/components/tabs/HealthTab";
+import DogsTab from "@/components/tabs/DogsTab";
+
+const tabs = {
+  home: HomeTab,
+  calendar: CalendarTab,
+  walks: WalksTab,
+  food: FoodTab,
+  health: HealthTab,
+  dogs: DogsTab,
+};
 
 const Index = () => {
+  const { isOnboarded, activeTab } = useApp();
+
+  if (!isOnboarded) return <Onboarding />;
+
+  const ActiveComponent = tabs[activeTab];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="max-w-lg mx-auto min-h-screen bg-background">
+      <ActiveComponent />
+      <BottomNav />
     </div>
   );
 };
