@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import dogFull from "@/assets/dog-full.png";
-import { HeartPulse, Plus, Check, Trash2 } from "lucide-react";
+import { Heart, Check, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -66,9 +66,10 @@ const HealthTab = () => {
       {!showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-destructive/80 text-destructive-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
+          className="w-full flex flex-col items-center justify-center gap-1 py-3 rounded-xl bg-destructive/80 text-destructive-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
-          <HeartPulse className="w-5 h-5" />
+          <Heart className="w-6 h-6" />
+          <span className="text-xs">Nowe zdarzenie</span>
         </button>
       )}
 

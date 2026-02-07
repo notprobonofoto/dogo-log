@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp, WalkBusiness } from "@/contexts/AppContext";
 import dogHead from "@/assets/dog-head.png";
-import { Footprints, Plus, Check, Trash2, Droplets, Circle } from "lucide-react";
+import { PawPrint, Check, Trash2, Home } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -71,16 +71,18 @@ const WalksTab = () => {
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setShowForm(true)}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-base transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
+            className="flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-base transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            <Footprints className="w-5 h-5" />
+            <PawPrint className="w-6 h-6" />
+            <span className="text-xs">Nowy spacer</span>
           </button>
           <button
             onClick={() => setShowHomeAccident(true)}
-            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-destructive/20 text-destructive font-bold text-base transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
+            className="flex flex-col items-center justify-center gap-1 py-3 px-4 rounded-xl bg-destructive/20 text-destructive font-bold text-base transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
             title="Zdarzenie w domu"
           >
-            🏠
+            <Home className="w-5 h-5" />
+            <span className="text-xs">W domu</span>
           </button>
         </div>
       )}
@@ -193,7 +195,7 @@ const WalksTab = () => {
 
       <div className="space-y-2">
         <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
-          <Footprints className="w-4 h-4" /> {todayWalks.length}
+          <PawPrint className="w-4 h-4" /> Dziś: {todayWalks.length}
         </h3>
         {todayWalks.length === 0 && <p className="text-sm text-muted-foreground">Brak spacerów</p>}
         {todayWalks.map((walk, i) => (
