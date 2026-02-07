@@ -38,12 +38,7 @@ const FoodTab = () => {
         <h1 className="text-xl font-extrabold text-foreground">Jedzenie</h1>
       </div>
       <div className="flex justify-center mb-4">
-        <img src={dogPaws} alt="" className="w-24 h-24 animate-breathe" />
-      </div>
-
-      {/* Bowl animation */}
-      <div className="text-center mb-4">
-        <div className="inline-block text-4xl animate-pulse-soft">🍽️</div>
+        <img src={dogPaws} alt="" className="w-28 h-28 animate-breathe" />
       </div>
 
       {!showForm && (
