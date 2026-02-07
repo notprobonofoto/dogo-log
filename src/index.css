@@ -1,4 +1,29 @@
 @tailwind base;
+
+/* Paw drift animation for background */
+@keyframes paw-drift {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg);
+  }
+  10% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.15;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) rotate(360deg);
+  }
+}
+
+.animate-paw-drift {
+  animation: paw-drift linear infinite;
+}
 @tailwind components;
 @tailwind utilities;
 
@@ -39,6 +64,9 @@
 
     --warn: 40 90% 55%;
     --warn-foreground: 40 60% 20%;
+
+    --warning: 30 95% 55%;
+    --warning-foreground: 30 60% 20%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
