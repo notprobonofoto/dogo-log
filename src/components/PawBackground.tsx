@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import pawPrint from "@/assets/paw-print.png";
 
 interface Paw {
   id: number;
@@ -7,39 +8,40 @@ interface Paw {
   delay: string;
   duration: string;
   rotate: string;
-  scale: string;
+  size: number;
 }
 
 const PawBackground = () => {
   const paws = useMemo<Paw[]>(() => {
-    return Array.from({ length: 15 }, (_, i) => ({
+    return Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 10}s`,
-      duration: `${15 + Math.random() * 10}s`,
+      delay: `${Math.random() * 15}s`,
+      duration: `${20 + Math.random() * 15}s`,
       rotate: `${Math.random() * 360}deg`,
-      scale: `${0.5 + Math.random() * 0.5}`,
+      size: 24 + Math.random() * 32,
     }));
   }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {paws.map((paw) => (
-        <div
+        <img
           key={paw.id}
-          className="absolute text-primary/5 animate-paw-drift"
+          src={pawPrint}
+          alt=""
+          className="absolute animate-paw-drift opacity-15"
           style={{
             left: paw.left,
             top: paw.top,
             animationDelay: paw.delay,
             animationDuration: paw.duration,
-            transform: `rotate(${paw.rotate}) scale(${paw.scale})`,
-            fontSize: "2rem",
+            transform: `rotate(${paw.rotate})`,
+            width: `${paw.size}px`,
+            height: `${paw.size}px`,
           }}
-        >
-          🐾
-        </div>
+        />
       ))}
     </div>
   );
