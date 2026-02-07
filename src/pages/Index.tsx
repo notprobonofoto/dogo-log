@@ -7,6 +7,7 @@ import WalksTab from "@/components/tabs/WalksTab";
 import FoodTab from "@/components/tabs/FoodTab";
 import HealthTab from "@/components/tabs/HealthTab";
 import DogsTab from "@/components/tabs/DogsTab";
+import PawBackground from "@/components/PawBackground";
 
 const tabs = {
   home: HomeTab,
@@ -25,8 +26,11 @@ const Index = () => {
   const ActiveComponent = tabs[activeTab];
 
   return (
-    <div className="max-w-lg mx-auto min-h-screen bg-background">
-      <ActiveComponent />
+    <div className="max-w-lg mx-auto min-h-screen bg-background relative">
+      <PawBackground />
+      <div className="relative z-10">
+        <ActiveComponent />
+      </div>
       <BottomNav />
     </div>
   );
