@@ -1,5 +1,4 @@
 import { useApp } from "@/contexts/AppContext";
-import logo from "@/assets/logo.png";
 import dogFull from "@/assets/dog-full.png";
 import { Footprints, UtensilsCrossed, HeartPulse, Dog, Settings, Copy } from "lucide-react";
 import { useState } from "react";
@@ -41,13 +40,8 @@ const HomeTab = () => {
         </div>
       )}
 
-      {/* Logo */}
-      <div className="text-center mb-2 animate-pop-in">
-        <img src={logo} alt="DogoLog" className="w-28 h-28 mx-auto" />
-      </div>
-
       {/* Dog hero */}
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-6 animate-pop-in">
         <img src={dogFull} alt="Piesek" className="w-36 h-36 animate-breathe" />
       </div>
 
