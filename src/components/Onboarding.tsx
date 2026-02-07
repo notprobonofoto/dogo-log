@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import dogPaws from "@/assets/dog-paws.png";
-import dogFull from "@/assets/dog-full.png";
 
 const generateCode = () => String(Math.floor(100000 + Math.random() * 900000));
 
@@ -25,12 +24,12 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
-      {/* Animated Dog */}
-      <div className="animate-pop-in mb-6">
+      {/* Single animated dog - sized for mobile */}
+      <div className="animate-pop-in mb-8">
         <img 
           src={dogPaws} 
           alt="DogoLog Piesek" 
-          className="w-40 h-40 mx-auto animate-dog-bounce" 
+          className="w-32 h-32 mx-auto animate-dog-bounce" 
         />
       </div>
 
@@ -49,7 +48,7 @@ const Onboarding = () => {
           <button
             onClick={handleNext}
             disabled={!name.trim()}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95"
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
             Dalej →
           </button>
@@ -57,19 +56,18 @@ const Onboarding = () => {
       )}
 
       {step === 1 && !mode && (
-        <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
-          <img src={dogFull} alt="Piesek" className="w-28 h-28 mx-auto animate-float" />
+        <div className="w-full max-w-sm animate-fade-in-up text-center space-y-5">
           <h2 className="text-xl font-bold text-foreground">Cześć, {name}! 👋</h2>
           <p className="text-muted-foreground text-sm">Co chcesz zrobić?</p>
           <button
             onClick={() => setMode("create")}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95"
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
             ➕ Stwórz nowe gospodarstwo
           </button>
           <button
             onClick={() => setMode("join")}
-            className="w-full py-3 rounded-lg bg-secondary text-secondary-foreground font-bold text-lg transition-all active:scale-95"
+            className="w-full py-3 rounded-lg bg-secondary text-secondary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-100"
           >
             🔑 Dołącz do istniejącego
           </button>
@@ -85,7 +83,7 @@ const Onboarding = () => {
           </div>
           <button
             onClick={handleNext}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95"
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
             Zacznijmy! 🐶
           </button>
@@ -108,7 +106,7 @@ const Onboarding = () => {
           <button
             onClick={handleNext}
             disabled={code.length !== 6}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95"
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
             Dołącz! 🐾
           </button>

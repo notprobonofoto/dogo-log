@@ -147,9 +147,9 @@
   }
 }
 
-@keyframes tail-wag {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
+@keyframes button-ready {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .animate-breathe { animation: breathe 3s ease-in-out infinite; }
@@ -164,6 +164,7 @@
 .animate-heart-float { animation: heart-float 1.2s ease-out forwards; }
 .animate-dog-bounce { animation: dog-bounce 2.5s ease-in-out infinite; }
 .animate-tail-wag { animation: tail-wag 0.3s ease-in-out infinite; }
+.animate-button-ready { animation: button-ready 0.4s ease-out forwards; }
 
 .delay-100 { animation-delay: 100ms; }
 .delay-200 { animation-delay: 200ms; }
