@@ -8,7 +8,7 @@ const Onboarding = () => {
   const { completeOnboarding } = useApp();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
-  const [mode, setMode] = useState<"create" | "join" | null>(null);
+  const [mode, setMode] = useState<"create" | "join" | "login" | null>(null);
   const [code, setCode] = useState("");
   const [generatedCode] = useState(generateCode);
 
@@ -17,7 +17,7 @@ const Onboarding = () => {
     if (step === 1 && mode === "create") {
       completeOnboarding(name.trim(), generatedCode);
     }
-    if (step === 1 && mode === "join" && code.length === 6) {
+    if (step === 1 && (mode === "join" || mode === "login") && code.length === 6) {
       completeOnboarding(name.trim(), code);
     }
   };
@@ -56,7 +56,7 @@ const Onboarding = () => {
       )}
 
       {step === 1 && !mode && (
-        <div className="w-full max-w-sm animate-fade-in-up text-center space-y-5">
+        <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
           <h2 className="text-xl font-bold text-foreground">Cześć, {name}! 👋</h2>
           <p className="text-muted-foreground text-sm">Co chcesz zrobić?</p>
           <button
@@ -69,7 +69,13 @@ const Onboarding = () => {
             onClick={() => setMode("join")}
             className="w-full py-3 rounded-lg bg-secondary text-secondary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-100"
           >
-            🔑 Dołącz do istniejącego
+            👥 Dołącz do czyjegoś gospodarstwa
+          </button>
+          <button
+            onClick={() => setMode("login")}
+            className="w-full py-3 rounded-lg bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-200"
+          >
+            🔑 Zaloguj się ponownie
           </button>
         </div>
       )}
@@ -109,6 +115,32 @@ const Onboarding = () => {
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
             Dołącz! 🐾
+          </button>
+          <button onClick={() => setMode(null)} className="text-sm text-muted-foreground underline">
+            ← Wróć
+          </button>
+        </div>
+      )}
+
+      {step === 1 && mode === "login" && (
+        <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
+          <h2 className="text-xl font-bold text-foreground">Witaj ponownie! 🐶</h2>
+          <p className="text-muted-foreground text-sm">Wpisz swój zapisany kod gospodarstwa</p>
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            placeholder="000000"
+            className="w-full text-center text-3xl tracking-[0.3em] font-bold rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            maxLength={6}
+            inputMode="numeric"
+          />
+          <button
+            onClick={handleNext}
+            disabled={code.length !== 6}
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
+          >
+            Zaloguj się! 🔓
           </button>
           <button onClick={() => setMode(null)} className="text-sm text-muted-foreground underline">
             ← Wróć
