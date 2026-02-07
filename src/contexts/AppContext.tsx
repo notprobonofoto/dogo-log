@@ -85,6 +85,7 @@ interface AppContextType {
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
   completeOnboarding: (name: string, code: string) => void;
+  logout: () => void;
   addDog: (dog: Omit<Dog, "id" | "photos">) => void;
   removeDog: (id: string) => void;
   addDogPhoto: (dogId: string, dataUrl: string) => void;
@@ -145,6 +146,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const completeOnboarding = useCallback((name: string, code: string) => {
     setData((d) => ({ ...d, userName: name, householdCode: code }));
+  }, []);
+
+  const logout = useCallback(() => {
+    setData(defaultData);
+    setActiveTab("home");
   }, []);
 
   const addDog = useCallback((dog: Omit<Dog, "id" | "photos">) => {
@@ -231,6 +237,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       activeTab,
       setActiveTab,
       completeOnboarding,
+      logout,
       addDog,
       removeDog,
       addDogPhoto,

@@ -2,7 +2,7 @@ import { useApp } from "@/contexts/AppContext";
 
 interface DogAvatarProps {
   dogId: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
@@ -10,6 +10,7 @@ const sizeClasses = {
   sm: "w-6 h-6",
   md: "w-10 h-10",
   lg: "w-16 h-16",
+  xl: "w-24 h-24",
 };
 
 const DogAvatar = ({ dogId, size = "md", className = "" }: DogAvatarProps) => {
