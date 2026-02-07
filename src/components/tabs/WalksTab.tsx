@@ -11,15 +11,17 @@ const now = () => new Date().toTimeString().slice(0, 5);
 const BUSINESS_OPTIONS: { value: WalkBusiness; icon: string; label: string }[] = [
   { value: "pee", icon: "💧", label: "Siku" },
   { value: "poop", icon: "💩", label: "Kupa" },
-  { value: "both", icon: "💧💩", label: "Oba" },
-  { value: "none", icon: "❌", label: "Nic" },
+  { value: "both", icon: "✅", label: "Oba" },
+  { value: "none", icon: "🚫", label: "Nic" },
 ];
+
+const DURATION_PRESETS = [5, 10, 15, 20, 30, 45, 60, 90, 120];
 
 const WalksTab = () => {
   const { data, addWalk, removeWalk, addHomeAccident, removeHomeAccident } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [selectedDogs, setSelectedDogs] = useState<string[]>([]);
-  const [duration, setDuration] = useState("30");
+  const [duration, setDuration] = useState(30);
   const [business, setBusiness] = useState<WalkBusiness>("none");
   const [success, setSuccess] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -35,11 +37,11 @@ const WalksTab = () => {
   };
 
   const handleSubmit = () => {
-    if (!selectedDogs.length || !duration) return;
-    addWalk({ dogIds: selectedDogs, date: today(), time: now(), duration: parseInt(duration), userId: data.userName, business });
+    if (!selectedDogs.length) return;
+    addWalk({ dogIds: selectedDogs, date: today(), time: now(), duration, userId: data.userName, business });
     setSuccess(true);
     setPaws((p) => [...p, Date.now()]);
-    setTimeout(() => { setSuccess(false); setShowForm(false); setSelectedDogs([]); setDuration("30"); setBusiness("none"); }, 1500);
+    setTimeout(() => { setSuccess(false); setShowForm(false); setSelectedDogs([]); setDuration(30); setBusiness("none"); }, 1500);
   };
 
   const handleHomeAccident = () => {
@@ -163,26 +165,36 @@ const WalksTab = () => {
                     <button
                       key={opt.value}
                       onClick={() => setBusiness(opt.value)}
-                      className={`py-3 rounded-xl font-bold text-xl transition-all ${
+                      className={`flex flex-col items-center py-2 rounded-xl font-bold transition-all ${
                         business === opt.value ? "bg-primary text-primary-foreground" : "bg-muted"
                       }`}
                       title={opt.label}
                     >
-                      {opt.icon}
+                      <span className="text-xl">{opt.icon}</span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5">{opt.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-foreground">⏱️</label>
+                <label className="text-sm font-semibold text-foreground block mb-2">⏱️ Długość: {duration} min</label>
                 <input
-                  type="number"
+                  type="range"
+                  min="5"
+                  max="120"
+                  step="5"
                   value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full mt-1 rounded-lg border border-border bg-background px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  inputMode="numeric"
+                  onChange={(e) => setDuration(parseInt(e.target.value))}
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                 />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>5</span>
+                  <span>30</span>
+                  <span>60</span>
+                  <span>90</span>
+                  <span>120</span>
+                </div>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-lg bg-muted text-muted-foreground font-semibold">Anuluj</button>

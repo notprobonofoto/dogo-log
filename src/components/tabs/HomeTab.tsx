@@ -1,15 +1,19 @@
 import { useApp } from "@/contexts/AppContext";
 import logo from "@/assets/logo.png";
-import { PawPrint, Utensils, Heart, Dog, Settings, Copy } from "lucide-react";
+import { PawPrint, Utensils, Heart, Dog, Settings, Copy, LogOut, Download } from "lucide-react";
 import { useState } from "react";
 import DogAvatar from "@/components/DogAvatar";
+import LogoutDialog from "@/components/LogoutDialog";
+import ReminderBanner from "@/components/ReminderBanner";
+import { Link } from "react-router-dom";
 
 const today = () => new Date().toISOString().split("T")[0];
 
 const HomeTab = () => {
-  const { data, setActiveTab } = useApp();
+  const { data, setActiveTab, logout } = useApp();
   const [showCode, setShowCode] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
 
   const todayStr = today();
   const todayWalks = data.walks.filter((w) => w.date === todayStr).length;
@@ -19,6 +23,11 @@ const HomeTab = () => {
     navigator.clipboard.writeText(data.householdCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setShowLogout(false);
   };
 
   return (
@@ -31,12 +40,26 @@ const HomeTab = () => {
       </div>
 
       {showCode && (
-        <div className="animate-fade-in-up bg-card rounded-xl p-4 mb-4 text-center space-y-2">
+        <div className="animate-fade-in-up bg-card rounded-xl p-4 mb-4 text-center space-y-3">
           <p className="text-sm text-muted-foreground">Kod gospodarstwa</p>
           <div className="text-2xl font-black tracking-[0.2em] text-primary">{data.householdCode}</div>
           <button onClick={copyCode} className="inline-flex items-center gap-1 text-sm text-primary font-semibold active:scale-95">
             <Copy className="w-4 h-4" /> {copied ? "✓" : "📋"}
           </button>
+          <div className="flex gap-2 mt-3">
+            <Link
+              to="/install"
+              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary font-semibold text-sm active:scale-95"
+            >
+              <Download className="w-4 h-4" /> Instaluj
+            </Link>
+            <button
+              onClick={() => setShowLogout(true)}
+              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-destructive/10 text-destructive font-semibold text-sm active:scale-95"
+            >
+              <LogOut className="w-4 h-4" /> Wyloguj
+            </button>
+          </div>
         </div>
       )}
 
@@ -47,13 +70,15 @@ const HomeTab = () => {
       <div className="text-center mb-6 animate-fade-in-up">
         <h1 className="text-2xl font-extrabold text-foreground">Cześć, {data.userName}! 🐾</h1>
         {data.dogs.length > 0 && (
-          <div className="flex justify-center gap-2 mt-3">
+          <div className="flex justify-center gap-3 mt-4">
             {data.dogs.map((dog) => (
-              <DogAvatar key={dog.id} dogId={dog.id} size="md" />
+              <DogAvatar key={dog.id} dogId={dog.id} size="lg" />
             ))}
           </div>
         )}
       </div>
+
+      <ReminderBanner />
 
       <div className="grid grid-cols-2 gap-3 mb-6">
         <button onClick={() => setActiveTab("walks")} className="bg-card rounded-xl p-4 text-center animate-fade-in-up delay-100 active:scale-95 hover:scale-[1.02] transition-all">
@@ -84,6 +109,13 @@ const HomeTab = () => {
           <span className="text-xs">{data.dogs.length} Pieski</span>
         </button>
       </div>
+
+      <LogoutDialog
+        open={showLogout}
+        householdCode={data.householdCode}
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogout(false)}
+      />
     </div>
   );
 };

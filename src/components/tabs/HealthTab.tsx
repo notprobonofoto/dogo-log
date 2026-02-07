@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, HealthEvent } from "@/contexts/AppContext";
 import dogFull from "@/assets/dog-full.png";
 import { Heart, Check, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
@@ -7,31 +7,62 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 
 const today = () => new Date().toISOString().split("T")[0];
 
-const EVENT_TYPES = [
-  { value: "weterynarz" as const, icon: "🩺" },
-  { value: "groomer" as const, icon: "✂️" },
-  { value: "szczepienie" as const, icon: "💉" },
-  { value: "waga" as const, icon: "⚖️" },
-  { value: "cieczka_start" as const, icon: "🔴" },
-  { value: "cieczka_koniec" as const, icon: "🟢" },
-  { value: "inne" as const, icon: "📝" },
+type EventType = HealthEvent["type"];
+
+const EVENT_TYPES: { value: EventType; icon: string; label: string }[] = [
+  { value: "weterynarz", icon: "🩺", label: "Weterynarz" },
+  { value: "groomer", icon: "✂️", label: "Groomer" },
+  { value: "szczepienie", icon: "💉", label: "Szczepienie" },
+  { value: "waga", icon: "⚖️", label: "Waga" },
+  { value: "cieczka_start", icon: "🔴", label: "Cieczka ▶" },
+  { value: "cieczka_koniec", icon: "🟢", label: "Cieczka ■" },
+  { value: "inne", icon: "📝", label: "Inne" },
 ];
 
 const HealthTab = () => {
   const { data, addHealthEvent, removeHealthEvent } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [dogId, setDogId] = useState("");
-  const [eventType, setEventType] = useState(EVENT_TYPES[0].value);
+  const [eventType, setEventType] = useState<EventType>("weterynarz");
   const [note, setNote] = useState("");
+  const [weight, setWeight] = useState("");
+  const [heatDate, setHeatDate] = useState(today());
   const [nextVisit, setNextVisit] = useState("");
   const [success, setSuccess] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const handleSubmit = () => {
     if (!dogId) return;
-    addHealthEvent({ dogId, date: today(), type: eventType, note: note || undefined, nextVisit: nextVisit || undefined });
+    
+    let finalNote = note;
+    let finalDate = today();
+    
+    if (eventType === "waga" && weight) {
+      finalNote = `${weight} kg${note ? ` · ${note}` : ""}`;
+    }
+    
+    if (eventType === "cieczka_start" || eventType === "cieczka_koniec") {
+      finalDate = heatDate;
+    }
+    
+    addHealthEvent({ 
+      dogId, 
+      date: finalDate, 
+      type: eventType, 
+      note: finalNote || undefined, 
+      nextVisit: nextVisit || undefined 
+    });
+    
     setSuccess(true);
-    setTimeout(() => { setSuccess(false); setShowForm(false); setDogId(""); setNote(""); setNextVisit(""); }, 1500);
+    setTimeout(() => { 
+      setSuccess(false); 
+      setShowForm(false); 
+      setDogId(""); 
+      setNote(""); 
+      setWeight("");
+      setHeatDate(today());
+      setNextVisit(""); 
+    }, 1500);
   };
 
   const upcoming = data.healthEvents.filter((h) => h.nextVisit && h.nextVisit >= today()).sort((a, b) => (a.nextVisit! > b.nextVisit! ? 1 : -1));
@@ -100,15 +131,43 @@ const HealthTab = () => {
                 <div className="grid grid-cols-4 gap-2 mt-2">
                   {EVENT_TYPES.map((t) => (
                     <button key={t.value} onClick={() => setEventType(t.value)}
-                      className={`py-3 rounded-xl font-bold text-xl transition-all ${eventType === t.value ? "bg-primary text-primary-foreground" : "bg-muted"}`}
-                      title={t.value}>
-                      {t.icon}
+                      className={`flex flex-col items-center py-2 rounded-xl font-bold transition-all ${eventType === t.value ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+                      title={t.label}>
+                      <span className="text-xl">{t.icon}</span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5">{t.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
-              <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Notatka"
+              
+              {eventType === "waga" && (
+                <div>
+                  <label className="text-sm font-semibold text-foreground">⚖️ Waga (kg)</label>
+                  <input 
+                    type="number" 
+                    step="0.01" 
+                    value={weight} 
+                    onChange={(e) => setWeight(e.target.value)} 
+                    placeholder="np. 12.50"
+                    className="w-full mt-1 rounded-lg border border-border bg-background px-4 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" 
+                  />
+                </div>
+              )}
+              
+              {(eventType === "cieczka_start" || eventType === "cieczka_koniec") && (
+                <div>
+                  <label className="text-sm font-semibold text-foreground">📅 Data</label>
+                  <input 
+                    type="date" 
+                    value={heatDate} 
+                    onChange={(e) => setHeatDate(e.target.value)}
+                    className="w-full mt-1 rounded-lg border border-border bg-background px-4 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" 
+                  />
+                </div>
+              )}
+              <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Notatka (opcjonalnie)"
                 className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              
               {(eventType === "weterynarz" || eventType === "groomer" || eventType === "szczepienie") && (
                 <div>
                   <label className="text-sm font-semibold text-foreground">📅 Następna</label>
