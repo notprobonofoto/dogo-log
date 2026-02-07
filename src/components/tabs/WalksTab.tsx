@@ -44,14 +44,14 @@ const WalksTab = () => {
         <h1 className="text-xl font-extrabold text-foreground">Spacery</h1>
       </div>
       <div className="flex justify-center mb-4">
-        <img src={dogHead} alt="" className="w-24 h-24 animate-wiggle" />
+        <img src={dogHead} alt="" className="w-20 h-20 animate-wiggle" />
       </div>
 
       {/* Add walk button */}
       {!showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 mb-4 animate-fade-in-up"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
           <Plus className="w-5 h-5" /> Zapisz spacer
         </button>

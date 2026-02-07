@@ -38,13 +38,13 @@ const FoodTab = () => {
         <h1 className="text-xl font-extrabold text-foreground">Jedzenie</h1>
       </div>
       <div className="flex justify-center mb-4">
-        <img src={dogPaws} alt="" className="w-28 h-28 animate-breathe" />
+        <img src={dogPaws} alt="" className="w-20 h-20 animate-breathe" />
       </div>
 
       {!showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 mb-4 animate-fade-in-up"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
           <Plus className="w-5 h-5" /> Zapisz posiłek
         </button>

@@ -43,7 +43,7 @@ const CalendarTab = () => {
   return (
     <div className="min-h-screen pb-20 px-4 pt-safe">
       <div className="flex items-center justify-center gap-3 pt-4 mb-4">
-        <img src={dogFull} alt="" className="w-10 h-10 animate-float" />
+        <img src={dogFull} alt="" className="w-12 h-12 animate-float" />
         <h1 className="text-xl font-extrabold text-foreground">Kalendarz</h1>
       </div>
 

@@ -40,9 +40,9 @@ const HomeTab = () => {
         </div>
       )}
 
-      {/* Dog hero */}
+      {/* Dog hero - mobile optimized */}
       <div className="flex justify-center mb-6 animate-pop-in">
-        <img src={dogFull} alt="Piesek" className="w-36 h-36 animate-breathe" />
+        <img src={dogFull} alt="Piesek" className="w-28 h-28 animate-breathe" />
       </div>
 
       {/* Greeting */}
@@ -76,7 +76,7 @@ const HomeTab = () => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`w-full flex items-center gap-3 p-4 rounded-xl ${color} font-semibold text-left transition-all active:scale-[0.98] animate-fade-in-up`}
+            className={`w-full flex items-center gap-3 p-4 rounded-xl ${color} font-semibold text-left transition-all active:scale-[0.97] hover:scale-[1.02] animate-button-ready`}
             style={{ animationDelay: `${(i + 2) * 100}ms` }}
           >
             <Icon className="w-5 h-5" />
