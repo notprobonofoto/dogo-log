@@ -1,12 +1,12 @@
 import { useApp, type Tab } from "@/contexts/AppContext";
-import { Home, Calendar, Footprints, UtensilsCrossed, HeartPulse, Dog } from "lucide-react";
+import { Home, CalendarDays, PawPrint, Utensils, Heart, Dog } from "lucide-react";
 
 const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "home", label: "Start", icon: Home },
-  { id: "calendar", label: "Kalendarz", icon: Calendar },
-  { id: "walks", label: "Spacery", icon: Footprints },
-  { id: "food", label: "Jedzenie", icon: UtensilsCrossed },
-  { id: "health", label: "Zdrowie", icon: HeartPulse },
+  { id: "calendar", label: "Kalendarz", icon: CalendarDays },
+  { id: "walks", label: "Spacery", icon: PawPrint },
+  { id: "food", label: "Jedzenie", icon: Utensils },
+  { id: "health", label: "Zdrowie", icon: Heart },
   { id: "dogs", label: "Pieski", icon: Dog },
 ];
 

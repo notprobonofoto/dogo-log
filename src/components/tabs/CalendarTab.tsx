@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useApp, MealType } from "@/contexts/AppContext";
 import dogFull from "@/assets/dog-full.png";
-import { ChevronLeft, ChevronRight, Footprints, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, PawPrint, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -132,7 +132,7 @@ const CalendarTab = () => {
         {selectedWalks.map((w) => (
           <div key={w.id} className="flex items-center justify-between bg-primary/10 rounded-lg p-3">
             <div className="flex items-center gap-2">
-              <Footprints className="w-4 h-4 text-primary" />
+              <PawPrint className="w-4 h-4 text-primary" />
               <div className="flex -space-x-1">
                 {w.dogIds.map((id) => <DogAvatar key={id} dogId={id} size="sm" />)}
               </div>

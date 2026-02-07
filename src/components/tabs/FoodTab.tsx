@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp, MealType } from "@/contexts/AppContext";
 import dogPaws from "@/assets/dog-paws.png";
-import { UtensilsCrossed, Plus, Check, Trash2 } from "lucide-react";
+import { Utensils, Check, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -56,7 +56,8 @@ const FoodTab = () => {
           onClick={() => setShowForm(true)}
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
-          <UtensilsCrossed className="w-5 h-5" />
+          <Utensils className="w-5 h-5" />
+          <span className="text-sm">Dodaj posiłek</span>
         </button>
       )}
 
@@ -115,7 +116,7 @@ const FoodTab = () => {
 
       <div className="space-y-2">
         <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
-          <UtensilsCrossed className="w-4 h-4" /> {todayMeals.length}
+          <Utensils className="w-4 h-4" /> Dziś: {todayMeals.length}
         </h3>
         {todayMeals.length === 0 && <p className="text-sm text-muted-foreground">Brak posiłków</p>}
         {todayMeals.map((meal, i) => (

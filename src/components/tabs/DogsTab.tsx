@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useApp } from "@/contexts/AppContext";
 import dogPaws from "@/assets/dog-paws.png";
-import { Plus, Trash2, Dog, Camera, Image, X } from "lucide-react";
+import { PlusCircle, Trash2, Dog, Camera, Image, X } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 const DogsTab = () => {
@@ -71,9 +71,10 @@ const DogsTab = () => {
       {!showForm && !selectedDog && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
+          className="w-full flex flex-col items-center justify-center gap-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
-          <Plus className="w-5 h-5" />
+          <PlusCircle className="w-6 h-6" />
+          <span className="text-xs">Dodaj pieska</span>
         </button>
       )}
 
