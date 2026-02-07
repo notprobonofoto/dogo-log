@@ -11,11 +11,11 @@ const MONTHS = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "L
 const fmt = (d: Date) => d.toISOString().split("T")[0];
 
 const MEAL_ICONS: Record<MealType, string> = {
-  dry: "🟤",
-  wet: "🟠",
-  mixed: "🟤🟠",
+  dry: "🍖",
+  wet: "🍲",
+  mixed: "🥣",
   treat: "🦴",
-  other: "➕",
+  other: "⭐",
 };
 
 const CalendarTab = () => {

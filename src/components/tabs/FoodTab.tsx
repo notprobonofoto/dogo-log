@@ -9,11 +9,11 @@ const today = () => new Date().toISOString().split("T")[0];
 const now = () => new Date().toTimeString().slice(0, 5);
 
 const MEAL_TYPES: { value: MealType; icon: string; label: string }[] = [
-  { value: "dry", icon: "🟤", label: "Suche" },
-  { value: "wet", icon: "🟠", label: "Mokre" },
-  { value: "mixed", icon: "🟤🟠", label: "Mieszane" },
+  { value: "dry", icon: "🍖", label: "Suche" },
+  { value: "wet", icon: "🍲", label: "Mokre" },
+  { value: "mixed", icon: "🥣", label: "Mieszane" },
   { value: "treat", icon: "🦴", label: "Smaczek" },
-  { value: "other", icon: "➕", label: "Inne" },
+  { value: "other", icon: "⭐", label: "Inne" },
 ];
 
 const FoodTab = () => {
@@ -95,12 +95,13 @@ const FoodTab = () => {
                     <button
                       key={t.value}
                       onClick={() => setMealType(t.value)}
-                      className={`py-3 rounded-xl font-bold text-xl transition-all ${
+                      className={`flex flex-col items-center py-2 rounded-xl font-bold transition-all ${
                         mealType === t.value ? "bg-accent text-accent-foreground" : "bg-muted"
                       }`}
                       title={t.label}
                     >
-                      {t.icon}
+                      <span className="text-xl">{t.icon}</span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5">{t.label}</span>
                     </button>
                   ))}
                 </div>
