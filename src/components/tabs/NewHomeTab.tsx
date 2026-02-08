@@ -1,7 +1,7 @@
 import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo.png";
-import { PawPrint, Utensils, Heart, Dog, Settings, Copy, LogOut, Download, Users, Bell } from "lucide-react";
+import { PawPrint, Utensils, Heart, Dog, Settings, Copy, LogOut, Download, Bell } from "lucide-react";
 import { useState } from "react";
 import DogAvatar from "@/components/DogAvatar";
 import LogoutDialog from "@/components/LogoutDialog";
@@ -12,6 +12,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import WelcomeGreeting from "@/components/WelcomeGreeting";
 import NotificationPanel from "@/components/NotificationPanel";
 import UserStatsCard from "@/components/UserStatsCard";
+import HouseholdMembersPanel from "@/components/HouseholdMembersPanel";
 import { Link } from "react-router-dom";
 
 type ActiveTab = "home" | "calendar" | "walks" | "food" | "health" | "dogs";
@@ -23,7 +24,7 @@ interface NewHomeTabProps {
 const today = () => new Date().toISOString().split("T")[0];
 
 const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
-  const { userName, householdCode, householdMembers, profileId, dogs, walks, meals, logout } = useApp();
+  const { userName, householdCode, dogs, walks, meals, logout } = useApp();
   const { t } = useLanguage();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -49,52 +50,52 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-safe">
+    <div className="min-h-screen pb-24 px-4 pt-safe" role="main" aria-label="Strona główna">
       <div className="flex justify-between items-center pt-4 mb-2">
         <button
           onClick={() => setShowNotifications(!showNotifications)}
-          className="p-2 rounded-full bg-card text-muted-foreground active:scale-95 hover:bg-muted transition-colors"
+          className="p-2 rounded-full bg-card text-muted-foreground active:scale-95 hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label={t("notifications")}
+          aria-expanded={showNotifications}
         >
-          <Bell className="w-5 h-5" />
+          <Bell className="w-5 h-5" aria-hidden="true" />
         </button>
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="p-2 rounded-full bg-card text-muted-foreground active:scale-95 hover:bg-muted transition-colors"
+          className="p-2 rounded-full bg-card text-muted-foreground active:scale-95 hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label={t("settings")}
+          aria-expanded={showSettings}
         >
-          <Settings className="w-5 h-5" />
+          <Settings className="w-5 h-5" aria-hidden="true" />
         </button>
       </div>
 
       {showNotifications && <NotificationPanel onClose={() => setShowNotifications(false)} />}
 
       {showSettings && (
-        <div className="animate-fade-in-up bg-card rounded-xl p-4 mb-4 space-y-4">
+        <div 
+          className="animate-fade-in-up bg-card rounded-xl p-4 mb-4 space-y-4"
+          role="region"
+          aria-label={t("settings")}
+        >
           <p className="text-sm text-muted-foreground text-center">{t("householdCode")}</p>
-          <div className="text-2xl font-black tracking-[0.2em] text-primary text-center">{householdCode}</div>
-          <button onClick={copyCode} className="flex items-center justify-center gap-1 text-sm text-primary font-semibold active:scale-95 w-full">
-            <Copy className="w-4 h-4" /> {copied ? "✓" : t("copy")}
+          <div 
+            className="text-2xl font-black tracking-[0.2em] text-primary text-center"
+            aria-label={`Kod gospodarstwa: ${householdCode}`}
+          >
+            {householdCode}
+          </div>
+          <button 
+            onClick={copyCode} 
+            className="flex items-center justify-center gap-1 text-sm text-primary font-semibold active:scale-95 w-full focus:outline-none focus:ring-2 focus:ring-ring rounded"
+            aria-label={copied ? t("copied") : t("copyCode")}
+          >
+            <Copy className="w-4 h-4" aria-hidden="true" /> {copied ? "✓" : t("copy")}
           </button>
 
-          {/* Household members */}
+          {/* Household members panel with management */}
           <div className="pt-3 border-t border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <Users className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-foreground">{t("householdMembers")}</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {householdMembers.map((member) => (
-                <span
-                  key={member.id}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    member.id === profileId
-                      ? "border-2 border-primary bg-transparent text-primary"
-                      : "bg-secondary text-secondary-foreground"
-                  }`}
-                >
-                  {member.name} {member.id === profileId && "(Ty)"}
-                </span>
-              ))}
-            </div>
+            <HouseholdMembersPanel />
           </div>
 
           <div className="pt-2 border-t border-border">
@@ -104,30 +105,36 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
           <div className="flex gap-2">
             <Link
               to="/install"
-              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary font-semibold text-sm active:scale-95"
+              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary font-semibold text-sm active:scale-95 focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label={t("install")}
             >
-              <Download className="w-4 h-4" /> {t("install")}
+              <Download className="w-4 h-4" aria-hidden="true" /> {t("install")}
             </Link>
             <button
               onClick={() => setShowLogout(true)}
-              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-destructive/10 text-destructive font-semibold text-sm active:scale-95"
+              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-destructive/10 text-destructive font-semibold text-sm active:scale-95 focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label={t("logout")}
             >
-              <LogOut className="w-4 h-4" /> {t("logout")}
+              <LogOut className="w-4 h-4" aria-hidden="true" /> {t("logout")}
             </button>
           </div>
         </div>
       )}
 
       <div className="flex justify-center mb-4 animate-fade-in-up">
-        <img src={logo} alt="DogoLog" className="w-36 h-auto" />
+        <img src={logo} alt="DogoLog - aplikacja do zarządzania pieskami" className="w-36 h-auto" />
       </div>
 
       <WelcomeGreeting name={userName} />
 
       {dogs.length > 0 && (
-        <div className="flex justify-center gap-4 mb-4 animate-fade-in-up">
+        <div 
+          className="flex justify-center gap-4 mb-4 animate-fade-in-up"
+          role="list"
+          aria-label={t("dogs")}
+        >
           {dogs.map((dog) => (
-            <div key={dog.id} className="flex flex-col items-center gap-1">
+            <div key={dog.id} className="flex flex-col items-center gap-1" role="listitem">
               <DogAvatar dogId={dog.id} size="xl" />
               <span className="text-xs font-bold text-foreground">{dog.name}</span>
             </div>
@@ -142,20 +149,22 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
       {/* User stats card */}
       <UserStatsCard />
 
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 gap-3 mb-4" role="navigation" aria-label="Skróty do sekcji">
         <button
           onClick={() => setActiveTab("walks")}
-          className="bg-card rounded-xl p-4 text-center animate-fade-in-up delay-100 active:scale-95 hover:scale-[1.02] transition-all"
+          className="bg-card rounded-xl p-4 text-center animate-fade-in-up delay-100 active:scale-95 hover:scale-[1.02] transition-all focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label={`${t("walks")}: ${todayWalks} dzisiaj`}
         >
-          <PawPrint className="w-8 h-8 mx-auto text-primary mb-1" />
+          <PawPrint className="w-8 h-8 mx-auto text-primary mb-1" aria-hidden="true" />
           <div className="text-2xl font-bold text-foreground">{todayWalks}</div>
           <span className="text-xs text-muted-foreground font-semibold">{t("walks")}</span>
         </button>
         <button
           onClick={() => setActiveTab("food")}
-          className="bg-card rounded-xl p-4 text-center animate-fade-in-up delay-200 active:scale-95 hover:scale-[1.02] transition-all"
+          className="bg-card rounded-xl p-4 text-center animate-fade-in-up delay-200 active:scale-95 hover:scale-[1.02] transition-all focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label={`${t("meals")}: ${todayMeals} dzisiaj`}
         >
-          <Utensils className="w-8 h-8 mx-auto text-accent mb-1" />
+          <Utensils className="w-8 h-8 mx-auto text-accent mb-1" aria-hidden="true" />
           <div className="text-2xl font-bold text-foreground">{todayMeals}</div>
           <span className="text-xs text-muted-foreground font-semibold">{t("meals")}</span>
         </button>
@@ -164,16 +173,18 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => setActiveTab("health")}
-          className="flex flex-col items-center justify-center gap-1 p-4 rounded-xl bg-destructive/10 text-destructive font-semibold transition-all active:scale-95 hover:scale-[1.02]"
+          className="flex flex-col items-center justify-center gap-1 p-4 rounded-xl bg-destructive/10 text-destructive font-semibold transition-all active:scale-95 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label={t("health")}
         >
-          <Heart className="w-7 h-7" />
+          <Heart className="w-7 h-7" aria-hidden="true" />
           <span className="text-xs">{t("health")}</span>
         </button>
         <button
           onClick={() => setActiveTab("dogs")}
-          className="flex flex-col items-center justify-center gap-1 p-4 rounded-xl bg-secondary text-secondary-foreground font-semibold transition-all active:scale-95 hover:scale-[1.02]"
+          className="flex flex-col items-center justify-center gap-1 p-4 rounded-xl bg-secondary text-secondary-foreground font-semibold transition-all active:scale-95 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label={`${dogs.length} ${t("dogs")}`}
         >
-          <Dog className="w-7 h-7" />
+          <Dog className="w-7 h-7" aria-hidden="true" />
           <span className="text-xs">
             {dogs.length} {t("dogs")}
           </span>

@@ -33,22 +33,31 @@ const BottomNav = ({ activeTab, setActiveTab }: BottomNavProps) => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/98 backdrop-blur-lg border-t border-border pb-safe z-50 shadow-lg">
-      <div className="flex justify-around items-center h-18 max-w-lg mx-auto py-1">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-card/98 backdrop-blur-lg border-t border-border pb-safe z-50 shadow-lg"
+      role="navigation"
+      aria-label="Główna nawigacja"
+    >
+      <div className="flex justify-around items-center h-18 max-w-lg mx-auto py-1" role="tablist">
         {tabs.map(({ id, icon: Icon }) => {
           const active = activeTab === id;
           return (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[56px] ${
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[56px] focus:outline-none focus:ring-2 focus:ring-ring ${
                 active 
                   ? "text-primary bg-primary/10 scale-105" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               }`}
+              role="tab"
+              aria-selected={active}
+              aria-label={getLabel(id)}
+              tabIndex={active ? 0 : -1}
             >
               <Icon 
-                className={`w-6 h-6 transition-all ${active ? "stroke-[2.5]" : "stroke-[1.8]"}`} 
+                className={`w-6 h-6 transition-all ${active ? "stroke-[2.5]" : "stroke-[1.8]"}`}
+                aria-hidden="true"
               />
               <span className={`text-[11px] font-bold transition-all ${active ? "text-primary" : "text-muted-foreground"}`}>
                 {getLabel(id)}

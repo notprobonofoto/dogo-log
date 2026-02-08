@@ -117,6 +117,7 @@ interface AppContextType {
   getDogAvatar: (dogId: string) => string | null;
   getDogLatestWeight: (dogId: string) => number | null;
   refreshData: () => Promise<void>;
+  removeMember: (profileId: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -752,6 +753,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return weightEvents.length > 0 ? weightEvents[0].weight! : null;
   };
 
+  const removeMember = async (memberId: string) => {
+    if (!householdId || memberId === profileId) return;
+
+    const { error } = await supabase.from("profiles").delete().eq("id", memberId);
+    if (error) {
+      console.error("Error removing member:", error);
+      return;
+    }
+    await refreshData();
+  };
+
   return (
     <AppContext.Provider value={{
       userName,
@@ -788,6 +800,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       getDogAvatar,
       getDogLatestWeight,
       refreshData,
+      removeMember,
     }}>
       {children}
     </AppContext.Provider>

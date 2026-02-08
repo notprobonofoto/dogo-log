@@ -70,66 +70,91 @@ const NewDogsTab = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
+    <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label={t("myDogs")}>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">{t("myDogs")}</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="p-3 rounded-full bg-primary text-primary-foreground active:scale-95 transition-all shadow-lg"
+          className="p-3 rounded-full bg-primary text-primary-foreground active:scale-95 transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          aria-label={showForm ? t("cancel") : t("addDog")}
+          aria-expanded={showForm}
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-6 h-6" aria-hidden="true" />
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4">
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t("dogName")}
-            className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          <input
-            type="date"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {/* Sex buttons with outline style for active */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSex("male")}
-              className={`flex-1 py-3 rounded-lg font-bold transition-all ${
-                sex === "male" 
-                  ? "border-2 border-primary bg-transparent text-primary" 
-                  : "bg-secondary text-secondary-foreground border-2 border-transparent"
-              }`}
-            >
-              ♂️ {t("male")}
-            </button>
-            <button
-              onClick={() => setSex("female")}
-              className={`flex-1 py-3 rounded-lg font-bold transition-all ${
-                sex === "female" 
-                  ? "border-2 border-primary bg-transparent text-primary" 
-                  : "bg-secondary text-secondary-foreground border-2 border-transparent"
-              }`}
-            >
-              ♀️ {t("female")}
-            </button>
+        <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4" role="form" aria-label={t("addDog")}>
+          <div>
+            <label htmlFor="dog-name" className="sr-only">{t("dogName")}</label>
+            <input
+              id="dog-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("dogName")}
+              className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
           </div>
-          <input
-            type="text"
-            value={breed}
-            onChange={(e) => setBreed(e.target.value)}
-            placeholder={t("breed")}
-            className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          <div>
+            <label htmlFor="birth-date" className="sr-only">{t("birthDate")}</label>
+            <input
+              id="birth-date"
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-label={t("birthDate")}
+            />
+          </div>
+          {/* Sex buttons with outline style for active */}
+          <fieldset>
+            <legend className="sr-only">{t("sex")}</legend>
+            <div className="flex gap-2" role="radiogroup">
+              <button
+                onClick={() => setSex("male")}
+                className={`flex-1 py-3 rounded-lg font-bold transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                  sex === "male" 
+                    ? "border-2 border-primary bg-transparent text-primary" 
+                    : "bg-secondary text-secondary-foreground border-2 border-transparent"
+                }`}
+                role="radio"
+                aria-checked={sex === "male"}
+                aria-label={t("male")}
+              >
+                ♂️ {t("male")}
+              </button>
+              <button
+                onClick={() => setSex("female")}
+                className={`flex-1 py-3 rounded-lg font-bold transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                  sex === "female" 
+                    ? "border-2 border-primary bg-transparent text-primary" 
+                    : "bg-secondary text-secondary-foreground border-2 border-transparent"
+                }`}
+                role="radio"
+                aria-checked={sex === "female"}
+                aria-label={t("female")}
+              >
+                ♀️ {t("female")}
+              </button>
+            </div>
+          </fieldset>
+          <div>
+            <label htmlFor="dog-breed" className="sr-only">{t("breed")}</label>
+            <input
+              id="dog-breed"
+              type="text"
+              value={breed}
+              onChange={(e) => setBreed(e.target.value)}
+              placeholder={t("breed")}
+              className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
           <button
             onClick={handleAdd}
             disabled={!name.trim() || !birthDate}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold disabled:opacity-50 active:scale-95 transition-all"
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold disabled:opacity-50 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            aria-label={t("addDog")}
           >
             {t("addDog")}
           </button>
@@ -137,7 +162,7 @@ const NewDogsTab = () => {
       )}
 
       {/* Dogs list - 2 columns on larger phones, 1 on small */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="list" aria-label={t("myDogs")}>
         {dogs.map((dog) => {
           const weight = getDogLatestWeight(dog.id);
           const age = calculateAge(dog.birth_date);
@@ -147,31 +172,35 @@ const NewDogsTab = () => {
             <div
               key={dog.id}
               className="bg-card rounded-xl p-4 animate-fade-in-up"
+              role="listitem"
+              aria-label={`${dog.name}, ${dog.sex === "male" ? t("male") : t("female")}, ${age}`}
             >
               <div className="flex items-start gap-4">
                 {/* Large Avatar */}
-                <div
+                <button
                   onClick={() => setSelectedDog(selectedDog === dog.id ? null : dog.id)}
-                  className="w-20 h-20 rounded-2xl bg-secondary flex items-center justify-center cursor-pointer overflow-hidden flex-shrink-0"
+                  className="w-20 h-20 rounded-2xl bg-secondary flex items-center justify-center cursor-pointer overflow-hidden flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-ring"
+                  aria-label={`Pokaż zdjęcia ${dog.name}`}
+                  aria-expanded={selectedDog === dog.id}
                 >
                   {avatar ? (
-                    <img src={avatar} alt={dog.name} className="w-full h-full object-cover" />
+                    <img src={avatar} alt={`Zdjęcie ${dog.name}`} className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-3xl">{dog.sex === "male" ? "🐕" : "🐩"}</span>
+                    <span className="text-3xl" aria-hidden="true">{dog.sex === "male" ? "🐕" : "🐩"}</span>
                   )}
-                </div>
+                </button>
 
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-bold text-foreground truncate">{dog.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {dog.sex === "male" ? "♂️" : "♀️"} {dog.breed || t("mixedBreed")}
+                    <span aria-hidden="true">{dog.sex === "male" ? "♂️" : "♀️"}</span> {dog.breed || t("mixedBreed")}
                   </p>
                   <p className="text-sm text-muted-foreground">{age}</p>
                   
                   {weight && (
                     <div className="flex items-center gap-1 mt-1 text-sm text-primary font-semibold">
-                      <Scale className="w-4 h-4" />
-                      {weight} kg
+                      <Scale className="w-4 h-4" aria-hidden="true" />
+                      <span aria-label={`Waga: ${weight} kilogramów`}>{weight} kg</span>
                     </div>
                   )}
                 </div>
@@ -179,31 +208,34 @@ const NewDogsTab = () => {
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => openPhotoPicker(dog.id)}
-                    className="p-2 rounded-lg bg-secondary text-secondary-foreground"
+                    className="p-2 rounded-lg bg-secondary text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    aria-label={`Dodaj zdjęcie ${dog.name}`}
                   >
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-5 h-5" aria-hidden="true" />
                   </button>
                   <button
                     onClick={() => setDeleteId(dog.id)}
-                    className="p-2 rounded-lg bg-destructive/10 text-destructive"
+                    className="p-2 rounded-lg bg-destructive/10 text-destructive focus:outline-none focus:ring-2 focus:ring-ring"
+                    aria-label={`${t("deleteDog")}: ${dog.name}`}
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-5 h-5" aria-hidden="true" />
                   </button>
                 </div>
               </div>
 
               {/* Photo gallery */}
               {selectedDog === dog.id && dog.photos.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-border">
+                <div className="mt-4 pt-4 border-t border-border" role="region" aria-label={`Galeria zdjęć ${dog.name}`}>
                   <div className="grid grid-cols-3 gap-2">
                     {dog.photos.map((photo) => (
                       <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden">
-                        <img src={photo.data_url} alt="" className="w-full h-full object-cover" />
+                        <img src={photo.data_url} alt={`Zdjęcie ${dog.name}`} className="w-full h-full object-cover" />
                         <button
                           onClick={() => setDeletePhotoInfo({ dogId: dog.id, photoId: photo.id })}
-                          className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-destructive-foreground"
+                          className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-destructive-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                          aria-label={`${t("deletePhoto")}: ${dog.name}`}
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3 h-3" aria-hidden="true" />
                         </button>
                       </div>
                     ))}
@@ -216,13 +248,14 @@ const NewDogsTab = () => {
       </div>
 
       {dogs.length === 0 && !showForm && (
-        <div className="text-center py-12">
+        <div className="text-center py-12" role="status">
           <p className="text-muted-foreground text-lg mb-4">{t("noDogs")}</p>
           <button
             onClick={() => setShowForm(true)}
-            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95"
+            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            aria-label={t("addFirstDog")}
           >
-            <Plus className="w-5 h-5 inline-block mr-2" />
+            <Plus className="w-5 h-5 inline-block mr-2" aria-hidden="true" />
             {t("addFirstDog")}
           </button>
         </div>
@@ -234,6 +267,7 @@ const NewDogsTab = () => {
         accept="image/*"
         className="hidden"
         onChange={handlePhotoUpload}
+        aria-label="Wybierz zdjęcie"
       />
 
       <ConfirmDialog

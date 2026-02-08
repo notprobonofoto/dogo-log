@@ -57,13 +57,13 @@ const NewHealthTab = () => {
   };
 
   const healthTypeIcons: Record<HealthType, React.ReactNode> = {
-    weterynarz: <Stethoscope className="w-5 h-5" />,
-    szczepienie: <Syringe className="w-5 h-5" />,
-    groomer: <Scissors className="w-5 h-5" />,
-    waga: <Scale className="w-5 h-5" />,
-    cieczka_start: <Flower2 className="w-5 h-5 text-destructive" />,
-    cieczka_koniec: <Flower2 className="w-5 h-5" />,
-    inne: <MoreHorizontal className="w-5 h-5" />,
+    weterynarz: <Stethoscope className="w-5 h-5" aria-hidden="true" />,
+    szczepienie: <Syringe className="w-5 h-5" aria-hidden="true" />,
+    groomer: <Scissors className="w-5 h-5" aria-hidden="true" />,
+    waga: <Scale className="w-5 h-5" aria-hidden="true" />,
+    cieczka_start: <Flower2 className="w-5 h-5 text-destructive" aria-hidden="true" />,
+    cieczka_koniec: <Flower2 className="w-5 h-5" aria-hidden="true" />,
+    inne: <MoreHorizontal className="w-5 h-5" aria-hidden="true" />,
   };
 
   const healthTypeLabels: Record<HealthType, string> = {
@@ -79,62 +79,74 @@ const NewHealthTab = () => {
   const sortedEvents = [...healthEvents].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
+    <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label={t("health")}>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">{t("health")}</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="p-3 rounded-full bg-destructive text-destructive-foreground active:scale-95 transition-all shadow-lg"
+          className="p-3 rounded-full bg-destructive text-destructive-foreground active:scale-95 transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          aria-label={showForm ? t("cancel") : t("addEvent")}
+          aria-expanded={showForm}
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-6 h-6" aria-hidden="true" />
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4">
+        <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4" role="form" aria-label={t("newEvent")}>
           {/* Dog selection - 2 per row */}
-          <div className="grid grid-cols-2 gap-3">
-            {dogs.map((dog) => (
-              <button
-                key={dog.id}
-                onClick={() => setSelectedDog(dog.id)}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-                  selectedDog === dog.id 
-                    ? "border-2 border-destructive bg-transparent" 
-                    : "bg-secondary border-2 border-transparent"
-                }`}
-              >
-                <DogAvatar dogId={dog.id} size="lg" />
-                <span className="font-semibold text-foreground">{dog.name}</span>
-              </button>
-            ))}
-          </div>
+          <fieldset>
+            <legend className="sr-only">{t("dog")}</legend>
+            <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("dog")}>
+              {dogs.map((dog) => (
+                <button
+                  key={dog.id}
+                  onClick={() => setSelectedDog(dog.id)}
+                  className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                    selectedDog === dog.id 
+                      ? "border-2 border-destructive bg-transparent" 
+                      : "bg-secondary border-2 border-transparent"
+                  }`}
+                  role="radio"
+                  aria-checked={selectedDog === dog.id}
+                  aria-label={dog.name}
+                >
+                  <DogAvatar dogId={dog.id} size="lg" />
+                  <span className="font-semibold text-foreground">{dog.name}</span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
 
           {/* Event type - FIXED ORDER - 2 per row */}
-          <div>
-            <label className="text-sm font-semibold text-foreground block mb-2">{t("eventType")}</label>
-            <div className="grid grid-cols-2 gap-2">
+          <fieldset>
+            <legend className="text-sm font-semibold text-foreground block mb-2">{t("eventType")}</legend>
+            <div className="grid grid-cols-2 gap-2" role="radiogroup">
               {HEALTH_TYPE_ORDER.map((type) => (
                 <button
                   key={type}
                   onClick={() => setEventType(type)}
-                  className={`flex items-center justify-center gap-2 p-3 rounded-xl font-semibold transition-all ${
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
                     eventType === type 
                       ? "border-2 border-destructive bg-transparent text-destructive" 
                       : "bg-secondary text-secondary-foreground border-2 border-transparent"
                   }`}
+                  role="radio"
+                  aria-checked={eventType === type}
+                  aria-label={healthTypeLabels[type]}
                 >
                   {healthTypeIcons[type]}
                   <span className="text-sm">{healthTypeLabels[type]}</span>
                 </button>
               ))}
             </div>
-          </div>
+          </fieldset>
 
           {/* Date */}
           <div>
-            <label className="text-sm font-semibold text-foreground block mb-2">{t("date")}</label>
+            <label htmlFor="health-date" className="text-sm font-semibold text-foreground block mb-2">{t("date")}</label>
             <input
+              id="health-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
@@ -145,14 +157,16 @@ const NewHealthTab = () => {
           {/* Weight input for weight type */}
           {eventType === "waga" && (
             <div>
-              <label className="text-sm font-semibold text-foreground block mb-2">{t("weight")} (kg)</label>
+              <label htmlFor="weight-input" className="text-sm font-semibold text-foreground block mb-2">{t("weight")} (kg)</label>
               <input
+                id="weight-input"
                 type="number"
                 step="0.01"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="25.50"
                 className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-destructive"
+                aria-label={`${t("weight")} w kilogramach`}
               />
             </div>
           )}
@@ -160,8 +174,9 @@ const NewHealthTab = () => {
           {/* Next visit for vet/groomer/vaccination */}
           {(eventType === "weterynarz" || eventType === "groomer" || eventType === "szczepienie") && (
             <div>
-              <label className="text-sm font-semibold text-foreground block mb-2">{t("nextVisit")}</label>
+              <label htmlFor="next-visit" className="text-sm font-semibold text-foreground block mb-2">{t("nextVisit")}</label>
               <input
+                id="next-visit"
                 type="date"
                 value={nextVisit}
                 onChange={(e) => setNextVisit(e.target.value)}
@@ -172,8 +187,9 @@ const NewHealthTab = () => {
 
           {/* Note */}
           <div>
-            <label className="text-sm font-semibold text-foreground block mb-2">{t("note")}</label>
+            <label htmlFor="health-note" className="text-sm font-semibold text-foreground block mb-2">{t("note")}</label>
             <textarea
+              id="health-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t("optionalNote")}
@@ -185,18 +201,24 @@ const NewHealthTab = () => {
           <button
             onClick={handleAdd}
             disabled={!selectedDog}
-            className="w-full py-3 rounded-lg bg-destructive text-destructive-foreground font-bold disabled:opacity-50 active:scale-95 transition-all"
+            className="w-full py-3 rounded-lg bg-destructive text-destructive-foreground font-bold disabled:opacity-50 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            aria-label={t("addEvent")}
           >
-            <Heart className="w-5 h-5 inline-block mr-2" />
+            <Heart className="w-5 h-5 inline-block mr-2" aria-hidden="true" />
             {t("addEvent")}
           </button>
         </div>
       )}
 
       {/* Health events list */}
-      <div className="space-y-3">
+      <div className="space-y-3" role="list" aria-label={t("health")}>
         {sortedEvents.map((event) => (
-          <div key={event.id} className="bg-card rounded-xl p-4 flex items-start gap-4 animate-fade-in-up">
+          <div 
+            key={event.id} 
+            className="bg-card rounded-xl p-4 flex items-start gap-4 animate-fade-in-up"
+            role="listitem"
+            aria-label={`${healthTypeLabels[event.type]}: ${getDogName(event.dog_id)} - ${event.date}`}
+          >
             <DogAvatar dogId={event.dog_id} size="lg" />
 
             <div className="flex-1 min-w-0">
@@ -215,7 +237,7 @@ const NewHealthTab = () => {
               )}
               {event.next_visit && (
                 <p className="text-xs text-accent mt-1 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
+                  <Calendar className="w-3 h-3" aria-hidden="true" />
                   {t("nextVisit")}: {event.next_visit}
                 </p>
               )}
@@ -223,16 +245,17 @@ const NewHealthTab = () => {
 
             <button
               onClick={() => setDeleteId(event.id)}
-              className="p-2 rounded-lg bg-destructive/10 text-destructive flex-shrink-0"
+              className="p-2 rounded-lg bg-destructive/10 text-destructive flex-shrink-0 hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label={`${t("deleteHealthEvent")}: ${healthTypeLabels[event.type]} - ${getDogName(event.dog_id)}`}
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
         ))}
 
         {sortedEvents.length === 0 && (
-          <div className="text-center py-12">
-            <Heart className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+          <div className="text-center py-12" role="status">
+            <Heart className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" aria-hidden="true" />
             <p className="text-muted-foreground">{t("noHealthEvents")}</p>
           </div>
         )}
