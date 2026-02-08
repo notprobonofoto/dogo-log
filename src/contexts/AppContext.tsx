@@ -167,16 +167,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const isOnboarded = !!householdId && !!householdCode && !!userName;
 
-  // Helper to set session household for RLS
-  const setSessionHousehold = async (hId: string) => {
-    try {
-      await supabase.rpc("set_session_household", { household_id_param: hId });
-    } catch (err) {
-      console.error("Error setting session household:", err);
-    }
-  };
-
-  // Initialize anonymous session on mount
+  // Initialize session on mount
   useEffect(() => {
     const init = async () => {
       // Ensure we have an anonymous session
@@ -194,9 +185,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         });
         
         if (exists) {
-          // Set session household for RLS policies
-          await setSessionHousehold(savedAuth.householdId);
-          
           setUserName(savedAuth.userName);
           setHouseholdCode(savedAuth.householdCode);
           setHouseholdId(savedAuth.householdId);
