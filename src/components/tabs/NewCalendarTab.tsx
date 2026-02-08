@@ -2,13 +2,20 @@ import { useState, useMemo } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Calendar } from "@/components/ui/calendar";
-import { PawPrint, Utensils, Heart, X } from "lucide-react";
+import { PawPrint, Utensils, Heart, X, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
+import ConfirmDialog from "@/components/ConfirmDialog";
+
+type DeleteTarget = {
+  type: "walk" | "meal" | "health";
+  id: string;
+} | null;
 
 const NewCalendarTab = () => {
-  const { dogs, walks, meals, healthEvents } = useApp();
+  const { dogs, walks, meals, healthEvents, removeWalk, removeMeal, removeHealthEvent } = useApp();
   const { t } = useLanguage();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
 
   // Get all dates with events
   const eventDates = useMemo(() => {
@@ -72,22 +79,57 @@ const NewCalendarTab = () => {
     other: t("other"),
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    switch (deleteTarget.type) {
+      case "walk":
+        await removeWalk(deleteTarget.id);
+        break;
+      case "meal":
+        await removeMeal(deleteTarget.id);
+        break;
+      case "health":
+        await removeHealthEvent(deleteTarget.id);
+        break;
+    }
+    setDeleteTarget(null);
+  };
+
+  const getDeleteDialogTitle = () => {
+    if (!deleteTarget) return "";
+    switch (deleteTarget.type) {
+      case "walk": return t("deleteWalk");
+      case "meal": return t("deleteMeal");
+      case "health": return t("deleteHealthEvent");
+    }
+  };
+
+  const getDeleteDialogMessage = () => {
+    if (!deleteTarget) return "";
+    switch (deleteTarget.type) {
+      case "walk": return t("deleteWalkConfirm");
+      case "meal": return t("deleteMealConfirm");
+      case "health": return t("deleteHealthConfirm");
+    }
+  };
+
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
+    <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label={t("calendar")}>
       <h1 className="text-2xl font-bold text-foreground mb-4 text-center">{t("calendar")}</h1>
 
       {/* Legend */}
-      <div className="flex justify-center gap-4 mb-4 text-xs">
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-primary" />
+      <div className="flex justify-center gap-4 mb-4 text-xs" role="list" aria-label="Legenda">
+        <div className="flex items-center gap-1" role="listitem">
+          <div className="w-3 h-3 rounded-full bg-primary" aria-hidden="true" />
           <span className="text-muted-foreground">{t("walks")}</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-accent" />
+        <div className="flex items-center gap-1" role="listitem">
+          <div className="w-3 h-3 rounded-full bg-accent" aria-hidden="true" />
           <span className="text-muted-foreground">{t("meals")}</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-destructive" />
+        <div className="flex items-center gap-1" role="listitem">
+          <div className="w-3 h-3 rounded-full bg-destructive" aria-hidden="true" />
           <span className="text-muted-foreground">{t("health")}</span>
         </div>
       </div>
@@ -115,25 +157,33 @@ const NewCalendarTab = () => {
 
       {/* Selected day events */}
       {selectedDate && (
-        <div className="bg-card rounded-xl p-4 animate-fade-in-up">
+        <div className="bg-card rounded-xl p-4 animate-fade-in-up" role="region" aria-label={`Zdarzenia z dnia ${selectedDate.toLocaleDateString("pl-PL")}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-foreground">
               {selectedDate.toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" })}
             </h2>
-            <button onClick={() => setSelectedDate(undefined)} className="p-1 text-muted-foreground">
-              <X className="w-5 h-5" />
+            <button 
+              onClick={() => setSelectedDate(undefined)} 
+              className="p-1 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring rounded"
+              aria-label="Zamknij widok dnia"
+            >
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
           {allEvents.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">{t("noEventsForDay")}</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3" role="list" aria-label="Lista zdarzeń">
               {allEvents.map((event, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 bg-background rounded-lg">
+                <div 
+                  key={idx} 
+                  className="flex items-start gap-3 p-3 bg-background rounded-lg"
+                  role="listitem"
+                >
                   {event.type === "walk" && (
                     <>
-                      <div className="p-2 rounded-full bg-primary/20">
+                      <div className="p-2 rounded-full bg-primary/20" aria-hidden="true">
                         <PawPrint className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
@@ -150,12 +200,19 @@ const NewCalendarTab = () => {
                           {event.data.profile_name && ` • ${event.data.profile_name}`}
                         </p>
                       </div>
+                      <button
+                        onClick={() => setDeleteTarget({ type: "walk", id: event.data.id })}
+                        className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                        aria-label={`${t("deleteWalk")}: ${event.data.time}`}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
                     </>
                   )}
 
                   {event.type === "meal" && (
                     <>
-                      <div className="p-2 rounded-full bg-accent/20">
+                      <div className="p-2 rounded-full bg-accent/20" aria-hidden="true">
                         <Utensils className="w-5 h-5 text-accent" />
                       </div>
                       <div className="flex-1">
@@ -168,12 +225,19 @@ const NewCalendarTab = () => {
                           {event.data.profile_name && ` • ${event.data.profile_name}`}
                         </p>
                       </div>
+                      <button
+                        onClick={() => setDeleteTarget({ type: "meal", id: event.data.id })}
+                        className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                        aria-label={`${t("deleteMeal")}: ${getDogName(event.data.dog_id)} ${event.data.time}`}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
                     </>
                   )}
 
                   {event.type === "health" && (
                     <>
-                      <div className="p-2 rounded-full bg-destructive/20">
+                      <div className="p-2 rounded-full bg-destructive/20" aria-hidden="true">
                         <Heart className="w-5 h-5 text-destructive" />
                       </div>
                       <div className="flex-1">
@@ -189,6 +253,13 @@ const NewCalendarTab = () => {
                           <p className="text-xs text-muted-foreground mt-1">{event.data.note}</p>
                         )}
                       </div>
+                      <button
+                        onClick={() => setDeleteTarget({ type: "health", id: event.data.id })}
+                        className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                        aria-label={`${t("deleteHealthEvent")}: ${healthTypeLabels[event.data.type]}`}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
                     </>
                   )}
                 </div>
@@ -197,6 +268,14 @@ const NewCalendarTab = () => {
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={getDeleteDialogTitle()}
+        message={getDeleteDialogMessage()}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 };

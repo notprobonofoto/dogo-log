@@ -55,6 +55,9 @@ const translations = {
     walksCategory: "Spacery",
     mealsCategory: "Posiłki",
     regularityCategory: "Regularność",
+    you: "Ty",
+    removeMember: "Usuń osobę",
+    removeMemberConfirm: "Czy na pewno chcesz usunąć osobę",
     accidentsCategory: "Zdarzenia domowe",
     points: "pkt",
     
@@ -242,6 +245,9 @@ const translations = {
     mealsCategory: "Meals",
     regularityCategory: "Regularity",
     accidentsCategory: "Home accidents",
+    you: "You",
+    removeMember: "Remove member",
+    removeMemberConfirm: "Are you sure you want to remove",
     points: "pts",
     
     // Walks Tab
