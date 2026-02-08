@@ -80,15 +80,18 @@ const NewHealthTab = () => {
 
   return (
     <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label={t("health")}>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">{t("health")}</h1>
+      <h1 className="text-2xl font-bold text-foreground text-center mb-4">{t("health")}</h1>
+      
+      {/* Centered add button */}
+      <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}
-          className="p-3 rounded-full bg-destructive text-destructive-foreground active:scale-95 transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="flex items-center gap-2 px-6 py-3 rounded-full bg-destructive text-destructive-foreground active:scale-95 transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 font-semibold"
           aria-label={showForm ? t("cancel") : t("addEvent")}
           aria-expanded={showForm}
         >
-          <Plus className="w-6 h-6" aria-hidden="true" />
+          <Plus className="w-5 h-5" aria-hidden="true" />
+          {showForm ? t("cancel") : t("addEvent")}
         </button>
       </div>
 

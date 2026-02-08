@@ -157,7 +157,7 @@ const NewCalendarTab = () => {
 
       {/* Selected day events */}
       {selectedDate && (
-        <div className="bg-card rounded-xl p-4 animate-fade-in-up" role="region" aria-label={`Zdarzenia z dnia ${selectedDate.toLocaleDateString("pl-PL")}`}>
+        <div className="bg-card rounded-2xl p-4 animate-fade-in-up aspect-square max-w-md mx-auto" role="region" aria-label={`Zdarzenia z dnia ${selectedDate.toLocaleDateString("pl-PL")}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-foreground">
               {selectedDate.toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" })}

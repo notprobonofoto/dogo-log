@@ -1,7 +1,7 @@
 import { useApp } from "@/contexts/AppContext";
 import PawBackground from "@/components/PawBackground";
-import BottomNav from "@/components/BottomNav";
-import HamburgerMenu from "@/components/HamburgerMenu";
+import TopBar from "@/components/TopBar";
+import QuickActionsBar from "@/components/QuickActionsBar";
 import NewHomeTab from "@/components/tabs/NewHomeTab";
 import NewCalendarTab from "@/components/tabs/NewCalendarTab";
 import NewWalksTab from "@/components/tabs/NewWalksTab";
@@ -10,13 +10,16 @@ import NewHealthTab from "@/components/tabs/NewHealthTab";
 import NewDogsTab from "@/components/tabs/NewDogsTab";
 import NewTravelTab from "@/components/tabs/NewTravelTab";
 import NotificationPanel from "@/components/NotificationPanel";
+import SettingsPanel from "@/components/SettingsPanel";
 import { useState } from "react";
+import type { MenuTab } from "@/components/HamburgerMenu";
 
-type ExtraTab = "travel" | "notifications" | null;
+type ExtraPanel = "notifications" | "settings" | null;
 
 const Dashboard = () => {
-  const { activeTab, setActiveTab, loading } = useApp();
-  const [extraTab, setExtraTab] = useState<ExtraTab>(null);
+  const { loading } = useApp();
+  const [activeTab, setActiveTab] = useState<MenuTab>("home");
+  const [extraPanel, setExtraPanel] = useState<ExtraPanel>(null);
 
   if (loading) {
     return (
@@ -26,22 +29,33 @@ const Dashboard = () => {
     );
   }
 
-  const handleMenuNavigate = (tab: string) => {
-    setExtraTab(tab as ExtraTab);
+  const handleNavigate = (tab: MenuTab) => {
+    setActiveTab(tab);
+    setExtraPanel(null);
   };
 
   const handleCloseExtra = () => {
-    setExtraTab(null);
+    setExtraPanel(null);
   };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <PawBackground />
-      <HamburgerMenu onNavigate={handleMenuNavigate} />
-      <div className="relative z-10">
-        {extraTab === "travel" && <NewTravelTab />}
-        {extraTab === "notifications" && <NotificationPanel onClose={handleCloseExtra} />}
-        {!extraTab && (
+      
+      {/* Top Bar */}
+      <TopBar
+        activeTab={activeTab}
+        onNavigate={handleNavigate}
+        onNotificationsClick={() => setExtraPanel("notifications")}
+        onSettingsClick={() => setExtraPanel("settings")}
+      />
+
+      {/* Main content - with top padding for fixed header */}
+      <div className="relative z-10 pt-16">
+        {extraPanel === "notifications" && <NotificationPanel onClose={handleCloseExtra} />}
+        {extraPanel === "settings" && <SettingsPanel onClose={handleCloseExtra} />}
+        
+        {!extraPanel && (
           <>
             {activeTab === "home" && <NewHomeTab setActiveTab={setActiveTab} />}
             {activeTab === "calendar" && <NewCalendarTab />}
@@ -49,20 +63,13 @@ const Dashboard = () => {
             {activeTab === "food" && <NewFoodTab />}
             {activeTab === "health" && <NewHealthTab />}
             {activeTab === "dogs" && <NewDogsTab />}
+            {activeTab === "travel" && <NewTravelTab />}
           </>
         )}
       </div>
-      {!extraTab && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />}
       
-      {/* Back button for extra tabs */}
-      {extraTab && (
-        <button
-          onClick={handleCloseExtra}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-primary text-primary-foreground rounded-full shadow-lg font-semibold"
-        >
-          ← Wróć
-        </button>
-      )}
+      {/* Quick Actions Bar */}
+      {!extraPanel && <QuickActionsBar activeTab={activeTab} onNavigate={handleNavigate} />}
     </div>
   );
 };

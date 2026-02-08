@@ -71,15 +71,18 @@ const NewDogsTab = () => {
 
   return (
     <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label={t("myDogs")}>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">{t("myDogs")}</h1>
+      <h1 className="text-2xl font-bold text-foreground text-center mb-4">{t("myDogs")}</h1>
+      
+      {/* Centered add button */}
+      <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}
-          className="p-3 rounded-full bg-primary text-primary-foreground active:scale-95 transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground active:scale-95 transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 font-semibold"
           aria-label={showForm ? t("cancel") : t("addDog")}
           aria-expanded={showForm}
         >
-          <Plus className="w-6 h-6" aria-hidden="true" />
+          <Plus className="w-5 h-5" aria-hidden="true" />
+          {showForm ? t("cancel") : t("addDog")}
         </button>
       </div>
 

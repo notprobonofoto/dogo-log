@@ -1,75 +1,96 @@
 import { useState } from "react";
-import { Menu, X, Plane, Bell } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Menu, X, Home, CalendarDays, PawPrint, Utensils, Heart, Dog, Plane } from "lucide-react";
+
+export type MenuTab = "home" | "calendar" | "walks" | "food" | "health" | "dogs" | "travel";
 
 interface HamburgerMenuProps {
-  onNavigate: (tab: string) => void;
+  activeTab: MenuTab;
+  onNavigate: (tab: MenuTab) => void;
 }
 
-const HamburgerMenu = ({ onNavigate }: HamburgerMenuProps) => {
+const HamburgerMenu = ({ activeTab, onNavigate }: HamburgerMenuProps) => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const { t, language } = useLanguage();
 
-  const menuItems = [
-    { id: "travel", icon: Plane, label: language === "pl" ? "Podróże" : "Travel" },
-    { id: "notifications", icon: Bell, label: t("notifications") },
+  const menuItems: { id: MenuTab; icon: React.ElementType; label: string }[] = [
+    { id: "home", icon: Home, label: "Start" },
+    { id: "calendar", icon: CalendarDays, label: t("calendar") },
+    { id: "walks", icon: PawPrint, label: t("walks") },
+    { id: "food", icon: Utensils, label: t("meals") },
+    { id: "health", icon: Heart, label: t("health") },
+    { id: "dogs", icon: Dog, label: t("dogs") },
+    { id: "travel", icon: Plane, label: t("travel") },
   ];
 
-  const handleItemClick = (id: string) => {
-    onNavigate(id);
+  const handleNavigate = (tab: MenuTab) => {
+    onNavigate(tab);
     setIsOpen(false);
   };
 
   return (
     <>
-      {/* Menu button */}
+      {/* Menu button - positioned by parent */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-card shadow-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-        aria-label={isOpen ? "Zamknij menu" : "Otwórz menu"}
+        onClick={() => setIsOpen(true)}
+        className="p-2 rounded-lg hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        aria-label="Menu"
         aria-expanded={isOpen}
       >
-        {isOpen ? (
-          <X className="w-6 h-6 text-foreground" />
-        ) : (
-          <Menu className="w-6 h-6 text-foreground" />
-        )}
+        <Menu className="w-6 h-6 text-foreground" />
       </button>
 
       {/* Overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 animate-fade-in"
+        <div 
+          className="fixed inset-0 bg-black/50 z-50 animate-fade-in"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* Menu panel */}
-      <div
-        className={`fixed top-0 right-0 h-full w-64 bg-card shadow-xl z-50 transform transition-transform duration-300 ${
+      {/* Slide-in menu */}
+      <div 
+        className={`fixed top-0 right-0 h-full w-72 bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
         aria-modal="true"
-        aria-label="Menu nawigacyjne"
+        aria-label="Menu nawigacji"
       >
-        <div className="pt-16 px-4">
-          <h2 className="text-lg font-bold text-foreground mb-4">{t("settings")}</h2>
-          
-          <nav className="space-y-2" role="navigation">
-            {menuItems.map(({ id, icon: Icon, label }) => (
+        {/* Header with close button */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-bold text-foreground">Menu</h2>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Zamknij menu"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Menu items */}
+        <nav className="p-4 space-y-2" role="navigation">
+          {menuItems.map(({ id, icon: Icon, label }) => {
+            const isActive = activeTab === id;
+            return (
               <button
                 key={id}
-                onClick={() => handleItemClick(id)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                onClick={() => handleNavigate(id)}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                  isActive 
+                    ? "bg-primary/10 text-primary border-2 border-primary" 
+                    : "bg-secondary hover:bg-secondary/80 text-foreground border-2 border-transparent"
+                }`}
+                aria-current={isActive ? "page" : undefined}
               >
-                <Icon className="w-5 h-5 text-primary" />
-                <span className="font-medium text-foreground">{label}</span>
+                <Icon className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                <span className="font-semibold">{label}</span>
               </button>
-            ))}
-          </nav>
-        </div>
+            );
+          })}
+        </nav>
       </div>
     </>
   );
