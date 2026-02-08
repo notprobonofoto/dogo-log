@@ -199,6 +199,12 @@ const translations = {
     feedRequest: "Prośba o karmienie",
     noNotifications: "Brak powiadomień",
     youSent: "Wysłałeś:",
+    
+    // Travel
+    travel: "Podróże",
+    selectCountry: "Wybierz kraj",
+    travelInfo: "Informacje o podróży",
+    aiDisclaimer: "Informacje są generowane przez AI i mogą być nieaktualne. Zawsze sprawdź oficjalne źródła przed podróżą.",
   },
   en: {
     // Common
@@ -396,6 +402,12 @@ const translations = {
     feedRequest: "Feed request",
     noNotifications: "No notifications",
     youSent: "You sent:",
+    
+    // Travel
+    travel: "Travel",
+    selectCountry: "Select country",
+    travelInfo: "Travel information",
+    aiDisclaimer: "Information is AI-generated and may be outdated. Always verify with official sources before traveling.",
   },
 } as const;
 

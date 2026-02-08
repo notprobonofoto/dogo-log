@@ -216,9 +216,13 @@ const NewCalendarTab = () => {
                         <Utensils className="w-5 h-5 text-accent" />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <DogAvatar dogId={event.data.dog_id} size="sm" />
-                          <span className="text-sm font-semibold text-foreground">{getDogName(event.data.dog_id)}</span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {event.data.dog_ids.map((dogId: string) => (
+                            <div key={dogId} className="flex items-center gap-1">
+                              <DogAvatar dogId={dogId} size="sm" />
+                              <span className="text-sm font-semibold text-foreground">{getDogName(dogId)}</span>
+                            </div>
+                          ))}
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {event.data.time} • {mealTypeLabels[event.data.type]}
@@ -228,7 +232,7 @@ const NewCalendarTab = () => {
                       <button
                         onClick={() => setDeleteTarget({ type: "meal", id: event.data.id })}
                         className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-                        aria-label={`${t("deleteMeal")}: ${getDogName(event.data.dog_id)} ${event.data.time}`}
+                        aria-label={`${t("deleteMeal")}: ${event.data.time}`}
                       >
                         <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
