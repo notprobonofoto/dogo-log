@@ -10,6 +10,15 @@ const translations = {
     delete: "Usuń",
     today: "Dziś",
     none: "Brak",
+    copy: "Kopiuj",
+    send: "Wyślij",
+    
+    // Auth
+    register: "Zarejestruj się",
+    password: "Hasło",
+    checkEmail: "Sprawdź email",
+    verifyEmailMessage: "Wysłaliśmy link weryfikacyjny na Twój adres email. Kliknij go, aby aktywować konto.",
+    redirecting: "Przekierowuję",
     
     // Onboarding
     welcomeTitle: "Witaj w DogoLog! 🐾",
@@ -17,19 +26,20 @@ const translations = {
     next: "Dalej →",
     hello: "Cześć",
     whatToDo: "Co chcesz zrobić?",
-    createHousehold: "➕ Stwórz nowe gospodarstwo",
-    joinHousehold: "👥 Dołącz do czyjegoś gospodarstwa",
-    loginAgain: "🔑 Zaloguj się ponownie",
+    createHousehold: "Stwórz nowe gospodarstwo",
+    joinHousehold: "Dołącz do czyjegoś gospodarstwa",
+    loginAgain: "Zaloguj się ponownie",
     yourHouseholdCode: "Twój kod gospodarstwa",
     shareCode: "Udostępnij go domownikom, żeby mogli dołączyć",
     letsStart: "Zacznijmy! 🐶",
     joinHouseholdTitle: "Dołącz do gospodarstwa",
     enterCode: "Wpisz 6-cyfrowy kod od domownika",
     join: "Dołącz! 🐾",
-    back: "← Wróć",
+    back: "Wróć",
     welcomeBack: "Witaj ponownie! 🐶",
     enterSavedCode: "Wpisz swój zapisany kod gospodarstwa",
-    login: "Zaloguj się! 🔓",
+    login: "Zaloguj się",
+    invalidCode: "Błędny kod gospodarstwa",
     
     // Home Tab
     greeting: "Cześć",
@@ -38,6 +48,7 @@ const translations = {
     health: "Zdrowie",
     dogs: "Pieski",
     householdCode: "Kod gospodarstwa",
+    householdMembers: "Członkowie gospodarstwa",
     install: "Instaluj",
     logout: "Wyloguj",
     dogHappiness: "Szczęście psów",
@@ -54,10 +65,14 @@ const translations = {
     min: "min",
     walkSaved: "Spacer zapisany! 🐾",
     noWalks: "Brak spacerów",
+    noWalksToday: "Brak spacerów dzisiaj",
     pee: "Siku",
     poop: "Kupa",
     both: "Oba",
     nothing: "Nic",
+    noBusiness: "Nic",
+    addWalk: "Dodaj spacer",
+    business: "Co zrobił?",
     
     // Food Tab
     foodTitle: "Jedzenie",
@@ -66,11 +81,16 @@ const translations = {
     type: "Typ",
     saved: "Zapisano! ❤️",
     noMeals: "Brak posiłków",
+    noMealsToday: "Brak posiłków dzisiaj",
     dry: "Suche",
     wet: "Mokre",
     mixed: "Mieszane",
     treat: "Smaczek",
     other: "Inne",
+    dryFood: "Suche",
+    wetFood: "Mokre",
+    mixedFood: "Mieszane",
+    mealType: "Rodzaj posiłku",
     
     // Health Tab
     healthTitle: "Zdrowie",
@@ -81,24 +101,34 @@ const translations = {
     date: "Data",
     time: "Godzina",
     noteOptional: "Notatka (opcjonalnie)",
-    nextVisit: "Następna",
+    optionalNote: "Notatka (opcjonalnie)",
+    note: "Notatka",
+    nextVisit: "Następna wizyta",
     healthSaved: "Zapisano! 💚",
     upcoming: "Nadchodzące",
     history: "Historia",
     noEvents: "Brak zdarzeń",
+    noHealthEvents: "Brak zdarzeń zdrowotnych",
     vet: "Weterynarz",
     groomer: "Groomer",
     vaccination: "Szczepienie",
     heatStart: "Cieczka ▶",
     heatEnd: "Cieczka ■",
     otherEvent: "Inne",
+    addEvent: "Dodaj zdarzenie",
     
     // Calendar
     calendarTitle: "Kalendarz",
+    calendar: "Kalendarz",
+    noEventsForDay: "Brak zdarzeń w tym dniu",
     
     // Dogs
     dogsTitle: "Pieski",
+    myDogs: "Moje pieski",
     addDog: "Dodaj pieska",
+    addFirstDog: "Dodaj pierwszego pieska",
+    noDogs: "Brak piesków",
+    dogName: "Imię pieska",
     name: "Imię",
     birthDate: "Data urodzenia",
     sex: "Płeć",
@@ -106,6 +136,7 @@ const translations = {
     female: "Samica",
     breed: "Rasa",
     breedOptional: "opcjonalnie",
+    mixedBreed: "Mieszaniec",
     
     // Dialogs
     deleteWalk: "Usuń spacer?",
@@ -116,6 +147,10 @@ const translations = {
     deleteMealConfirm: "Czy na pewno chcesz usunąć ten posiłek?",
     deleteHealthEvent: "Usuń zdarzenie?",
     deleteHealthConfirm: "Czy na pewno chcesz usunąć to zdarzenie zdrowotne?",
+    deleteDog: "Usuń pieska?",
+    deleteDogConfirm: "Czy na pewno chcesz usunąć tego pieska i wszystkie jego dane?",
+    deletePhoto: "Usuń zdjęcie?",
+    deletePhotoConfirm: "Czy na pewno chcesz usunąć to zdjęcie?",
     
     // Logout
     logoutTitle: "Wylogowanie",
@@ -133,6 +168,14 @@ const translations = {
     // Settings
     language: "Język",
     settings: "Ustawienia",
+    
+    // Notifications
+    notifications: "Powiadomienia",
+    sendRequest: "Wyślij prośbę",
+    walkRequest: "Prośba o spacer",
+    feedRequest: "Prośba o karmienie",
+    noNotifications: "Brak powiadomień",
+    youSent: "Wysłałeś:",
   },
   en: {
     // Common
@@ -141,6 +184,15 @@ const translations = {
     delete: "Delete",
     today: "Today",
     none: "None",
+    copy: "Copy",
+    send: "Send",
+    
+    // Auth
+    register: "Sign up",
+    password: "Password",
+    checkEmail: "Check your email",
+    verifyEmailMessage: "We've sent a verification link to your email address. Click it to activate your account.",
+    redirecting: "Redirecting",
     
     // Onboarding
     welcomeTitle: "Welcome to DogoLog! 🐾",
@@ -148,19 +200,20 @@ const translations = {
     next: "Next →",
     hello: "Hello",
     whatToDo: "What would you like to do?",
-    createHousehold: "➕ Create new household",
-    joinHousehold: "👥 Join someone's household",
-    loginAgain: "🔑 Log in again",
+    createHousehold: "Create new household",
+    joinHousehold: "Join someone's household",
+    loginAgain: "Log in again",
     yourHouseholdCode: "Your household code",
     shareCode: "Share it with family members so they can join",
     letsStart: "Let's start! 🐶",
     joinHouseholdTitle: "Join household",
     enterCode: "Enter the 6-digit code from a family member",
     join: "Join! 🐾",
-    back: "← Back",
+    back: "Back",
     welcomeBack: "Welcome back! 🐶",
     enterSavedCode: "Enter your saved household code",
-    login: "Log in! 🔓",
+    login: "Log in",
+    invalidCode: "Invalid household code",
     
     // Home Tab
     greeting: "Hello",
@@ -169,6 +222,7 @@ const translations = {
     health: "Health",
     dogs: "Dogs",
     householdCode: "Household code",
+    householdMembers: "Household members",
     install: "Install",
     logout: "Logout",
     dogHappiness: "Dog Happiness",
@@ -185,10 +239,14 @@ const translations = {
     min: "min",
     walkSaved: "Walk saved! 🐾",
     noWalks: "No walks",
+    noWalksToday: "No walks today",
     pee: "Pee",
     poop: "Poop",
     both: "Both",
     nothing: "None",
+    noBusiness: "None",
+    addWalk: "Add walk",
+    business: "What did they do?",
     
     // Food Tab
     foodTitle: "Food",
@@ -197,11 +255,16 @@ const translations = {
     type: "Type",
     saved: "Saved! ❤️",
     noMeals: "No meals",
+    noMealsToday: "No meals today",
     dry: "Dry",
     wet: "Wet",
     mixed: "Mixed",
     treat: "Treat",
     other: "Other",
+    dryFood: "Dry food",
+    wetFood: "Wet food",
+    mixedFood: "Mixed food",
+    mealType: "Meal type",
     
     // Health Tab
     healthTitle: "Health",
@@ -212,24 +275,34 @@ const translations = {
     date: "Date",
     time: "Time",
     noteOptional: "Note (optional)",
+    optionalNote: "Note (optional)",
+    note: "Note",
     nextVisit: "Next visit",
     healthSaved: "Saved! 💚",
     upcoming: "Upcoming",
     history: "History",
     noEvents: "No events",
+    noHealthEvents: "No health events",
     vet: "Vet",
     groomer: "Groomer",
     vaccination: "Vaccination",
     heatStart: "Heat ▶",
     heatEnd: "Heat ■",
     otherEvent: "Other",
+    addEvent: "Add event",
     
     // Calendar
     calendarTitle: "Calendar",
+    calendar: "Calendar",
+    noEventsForDay: "No events for this day",
     
     // Dogs
     dogsTitle: "Dogs",
+    myDogs: "My dogs",
     addDog: "Add dog",
+    addFirstDog: "Add your first dog",
+    noDogs: "No dogs yet",
+    dogName: "Dog's name",
     name: "Name",
     birthDate: "Birth date",
     sex: "Sex",
@@ -237,6 +310,7 @@ const translations = {
     female: "Female",
     breed: "Breed",
     breedOptional: "optional",
+    mixedBreed: "Mixed breed",
     
     // Dialogs
     deleteWalk: "Delete walk?",
@@ -247,6 +321,10 @@ const translations = {
     deleteMealConfirm: "Are you sure you want to delete this meal?",
     deleteHealthEvent: "Delete event?",
     deleteHealthConfirm: "Are you sure you want to delete this health event?",
+    deleteDog: "Delete dog?",
+    deleteDogConfirm: "Are you sure you want to delete this dog and all their data?",
+    deletePhoto: "Delete photo?",
+    deletePhotoConfirm: "Are you sure you want to delete this photo?",
     
     // Logout
     logoutTitle: "Logout",
@@ -264,6 +342,14 @@ const translations = {
     // Settings
     language: "Language",
     settings: "Settings",
+    
+    // Notifications
+    notifications: "Notifications",
+    sendRequest: "Send request",
+    walkRequest: "Walk request",
+    feedRequest: "Feed request",
+    noNotifications: "No notifications",
+    youSent: "You sent:",
   },
 } as const;
 

@@ -1,24 +1,29 @@
-import { useApp, type Tab } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Home, CalendarDays, PawPrint, Utensils, Heart, Dog } from "lucide-react";
 
-const BottomNav = () => {
-  const { activeTab, setActiveTab } = useApp();
+type Tab = "home" | "calendar" | "walks" | "food" | "health" | "dogs";
+
+interface BottomNavProps {
+  activeTab: Tab;
+  setActiveTab: (tab: Tab) => void;
+}
+
+const BottomNav = ({ activeTab, setActiveTab }: BottomNavProps) => {
   const { t } = useLanguage();
 
-  const tabs: { id: Tab; labelKey: "greeting" | "calendarTitle" | "walks" | "meals" | "health" | "dogs"; icon: React.ElementType }[] = [
-    { id: "home", labelKey: "greeting", icon: Home },
-    { id: "calendar", labelKey: "calendarTitle", icon: CalendarDays },
-    { id: "walks", labelKey: "walks", icon: PawPrint },
-    { id: "food", labelKey: "meals", icon: Utensils },
-    { id: "health", labelKey: "health", icon: Heart },
-    { id: "dogs", labelKey: "dogs", icon: Dog },
+  const tabs: { id: Tab; icon: React.ElementType }[] = [
+    { id: "home", icon: Home },
+    { id: "calendar", icon: CalendarDays },
+    { id: "walks", icon: PawPrint },
+    { id: "food", icon: Utensils },
+    { id: "health", icon: Heart },
+    { id: "dogs", icon: Dog },
   ];
 
   const getLabel = (id: Tab): string => {
     const labels: Record<Tab, string> = {
       home: "Start",
-      calendar: t("calendarTitle"),
+      calendar: t("calendar"),
       walks: t("walks"),
       food: t("meals"),
       health: t("health"),

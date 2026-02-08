@@ -1,34 +1,43 @@
 import { useState, useEffect } from "react";
-import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface WelcomeGreetingProps {
-  onComplete: () => void;
+  name: string;
 }
 
-const WelcomeGreeting = ({ onComplete }: WelcomeGreetingProps) => {
-  const { data } = useApp();
+const WelcomeGreeting = ({ name }: WelcomeGreetingProps) => {
   const { t } = useLanguage();
   const [visible, setVisible] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
+  const [hasShown, setHasShown] = useState(false);
 
   useEffect(() => {
+    // Only show once per session
+    const sessionKey = "dogolog_greeted";
+    if (sessionStorage.getItem(sessionKey)) {
+      setVisible(false);
+      setHasShown(true);
+      return;
+    }
+
+    sessionStorage.setItem(sessionKey, "true");
+
     const timer1 = setTimeout(() => {
       setFadeOut(true);
     }, 1500);
 
     const timer2 = setTimeout(() => {
       setVisible(false);
-      onComplete();
+      setHasShown(true);
     }, 2000);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [onComplete]);
+  }, []);
 
-  if (!visible) return null;
+  if (!visible || hasShown) return null;
 
   return (
     <div
@@ -41,7 +50,7 @@ const WelcomeGreeting = ({ onComplete }: WelcomeGreetingProps) => {
           className="text-4xl font-black text-foreground"
           style={{ fontFamily: "'Nunito', sans-serif" }}
         >
-          {t("greeting")}, {data.userName}! 
+          {t("greeting")}, {name}! 
           <span className="inline-block animate-wave ml-2">👋</span>
         </h1>
       </div>
