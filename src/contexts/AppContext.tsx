@@ -119,7 +119,7 @@ interface AppContextType {
   getDogAvatar: (dogId: string) => string | null;
   getDogLatestWeight: (dogId: string) => number | null;
   refreshData: () => Promise<void>;
-  removeMember: (profileId: string) => Promise<void>;
+  removeMember: (profileId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -854,15 +854,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return weightEvents.length > 0 ? weightEvents[0].weight! : null;
   };
 
-  const removeMember = async (memberId: string) => {
-    if (!householdId || memberId === profileId) return;
+  const removeMember = async (memberId: string): Promise<{ success: boolean; error?: string }> => {
+    if (!householdId || memberId === profileId) {
+      return { success: false, error: "Cannot remove yourself" };
+    }
 
     const { error } = await supabase.from("profiles").delete().eq("id", memberId);
     if (error) {
       console.error("Error removing member:", error);
-      return;
+      return { success: false, error: error.message };
     }
     await refreshData();
+    return { success: true };
   };
 
   return (

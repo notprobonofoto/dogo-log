@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Users, Trash2, PawPrint, Utensils, Heart, Calendar } from "lucide-react";
+import { Users, Trash2, PawPrint, Utensils } from "lucide-react";
 import ConfirmDialog from "./ConfirmDialog";
+import { toast } from "@/hooks/use-toast";
 
 interface MemberStats {
   walks: number;
@@ -51,8 +52,22 @@ const HouseholdMembersPanel = () => {
 
   const handleDelete = async () => {
     if (deleteId && removeMember) {
-      await removeMember(deleteId);
+      const memberName = householdMembers.find(m => m.id === deleteId)?.name;
+      const result = await removeMember(deleteId);
       setDeleteId(null);
+      
+      if (result.success) {
+        toast({
+          title: t("memberRemoved"),
+          description: `${memberName} ${t("removedFromHousehold")}`,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: t("error"),
+          description: result.error || t("errorRemovingMember"),
+        });
+      }
     }
   };
 

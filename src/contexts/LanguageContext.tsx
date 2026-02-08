@@ -62,6 +62,10 @@ const translations = {
     you: "Ty",
     removeMember: "Usuń osobę",
     removeMemberConfirm: "Czy na pewno chcesz usunąć osobę",
+    memberRemoved: "Usunięto",
+    removedFromHousehold: "został usunięty z gospodarstwa",
+    error: "Błąd",
+    errorRemovingMember: "Nie udało się usunąć osoby",
     accidentsCategory: "Zdarzenia domowe",
     points: "pkt",
     
@@ -256,6 +260,10 @@ const translations = {
     you: "You",
     removeMember: "Remove member",
     removeMemberConfirm: "Are you sure you want to remove",
+    memberRemoved: "Removed",
+    removedFromHousehold: "was removed from household",
+    error: "Error",
+    errorRemovingMember: "Failed to remove member",
     points: "pts",
     
     // Walks Tab
