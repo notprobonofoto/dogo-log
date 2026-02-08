@@ -17,15 +17,23 @@ const NewFoodTab = () => {
   const [mealType, setMealType] = useState<MealType>("dry");
   const [date, setDate] = useState(today());
   const [time, setTime] = useState(now());
+  const [otherNote, setOtherNote] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const handleAdd = async () => {
     if (!selectedDog) return;
-    await addMeal({ dog_id: selectedDog, date, time, type: mealType });
+    await addMeal({ 
+      dog_id: selectedDog, 
+      date, 
+      time, 
+      type: mealType,
+      note: mealType === "other" && otherNote.trim() ? otherNote.trim() : undefined
+    });
     setSelectedDog(null);
     setMealType("dry");
     setDate(today());
     setTime(now());
+    setOtherNote("");
     setShowForm(false);
   };
 
@@ -73,7 +81,9 @@ const NewFoodTab = () => {
                 key={dog.id}
                 onClick={() => setSelectedDog(dog.id)}
                 className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-                  selectedDog === dog.id ? "bg-accent/20 ring-2 ring-accent" : "bg-secondary"
+                  selectedDog === dog.id 
+                    ? "border-2 border-accent bg-transparent" 
+                    : "bg-secondary border-2 border-transparent"
                 }`}
               >
                 <DogAvatar dogId={dog.id} size="lg" />
@@ -107,7 +117,9 @@ const NewFoodTab = () => {
                   key={type}
                   onClick={() => setMealType(type)}
                   className={`flex items-center justify-center gap-2 p-3 rounded-xl font-semibold transition-all ${
-                    mealType === type ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground"
+                    mealType === type 
+                      ? "border-2 border-accent bg-transparent text-accent" 
+                      : "bg-secondary text-secondary-foreground border-2 border-transparent"
                   }`}
                 >
                   <span className="text-xl">{mealIcons[type]}</span>
@@ -116,6 +128,22 @@ const NewFoodTab = () => {
               ))}
             </div>
           </div>
+
+          {/* Note field for "other" meal type */}
+          {mealType === "other" && (
+            <div>
+              <label className="text-sm font-semibold text-foreground block mb-2">
+                {t("otherFoodPlaceholder")}
+              </label>
+              <input
+                type="text"
+                value={otherNote}
+                onChange={(e) => setOtherNote(e.target.value)}
+                placeholder={t("otherFoodPlaceholder")}
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
+          )}
 
           <button
             onClick={handleAdd}
@@ -140,6 +168,9 @@ const NewFoodTab = () => {
                 {meal.time} • {mealIcons[meal.type]} {mealLabels[meal.type]}
                 {meal.profile_name && ` • ${meal.profile_name}`}
               </p>
+              {meal.note && (
+                <p className="text-xs text-muted-foreground mt-1 italic">📝 {meal.note}</p>
+              )}
             </div>
 
             <button

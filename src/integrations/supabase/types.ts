@@ -202,6 +202,7 @@ export type Database = {
           dog_id: string
           household_id: string
           id: string
+          note: string | null
           profile_id: string | null
           time: string
           type: string
@@ -212,6 +213,7 @@ export type Database = {
           dog_id: string
           household_id: string
           id?: string
+          note?: string | null
           profile_id?: string | null
           time: string
           type?: string
@@ -222,6 +224,7 @@ export type Database = {
           dog_id?: string
           household_id?: string
           id?: string
+          note?: string | null
           profile_id?: string | null
           time?: string
           type?: string
@@ -384,6 +387,7 @@ export type Database = {
           duration: number
           household_id: string
           id: string
+          note: string | null
           profile_id: string | null
           time: string
         }
@@ -394,6 +398,7 @@ export type Database = {
           duration?: number
           household_id: string
           id?: string
+          note?: string | null
           profile_id?: string | null
           time: string
         }
@@ -404,6 +409,7 @@ export type Database = {
           duration?: number
           household_id?: string
           id?: string
+          note?: string | null
           profile_id?: string | null
           time?: string
         }

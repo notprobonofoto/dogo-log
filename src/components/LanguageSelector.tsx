@@ -1,6 +1,7 @@
+import * as React from "react";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
 
-const LanguageSelector = () => {
+const LanguageSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
   const { language, setLanguage, t } = useLanguage();
 
   const languages: { code: Language; flag: string; name: string }[] = [
@@ -9,7 +10,7 @@ const LanguageSelector = () => {
   ];
 
   return (
-    <div className="space-y-2">
+    <div ref={ref} className="space-y-2">
       <label className="text-sm font-semibold text-muted-foreground">
         {t("language")}
       </label>
@@ -20,8 +21,8 @@ const LanguageSelector = () => {
             onClick={() => setLanguage(lang.code)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
               language === lang.code
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "border-2 border-primary bg-transparent text-primary"
+                : "bg-muted text-muted-foreground hover:bg-muted/80 border-2 border-transparent"
             }`}
           >
             <span className="text-lg">{lang.flag}</span>
@@ -31,6 +32,8 @@ const LanguageSelector = () => {
       </div>
     </div>
   );
-};
+});
+
+LanguageSelector.displayName = "LanguageSelector";
 
 export default LanguageSelector;

@@ -1,13 +1,24 @@
 import { useState } from "react";
 import { useApp, type HealthEvent } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Heart, Plus, Trash2, Stethoscope, Scissors, Syringe, Calendar, Scale, MoreHorizontal } from "lucide-react";
+import { Heart, Plus, Trash2, Stethoscope, Scissors, Syringe, Calendar, Scale, MoreHorizontal, Flower2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 const today = () => new Date().toISOString().split("T")[0];
 
 type HealthType = HealthEvent["type"];
+
+// FIXED ORDER: 1. Weterynarz, 2. Szczepienie, 3. Groomer, 4. Waga, 5. Cieczka start, 6. Cieczka stop, 7. Inne
+const HEALTH_TYPE_ORDER: HealthType[] = [
+  "weterynarz",
+  "szczepienie", 
+  "groomer",
+  "waga",
+  "cieczka_start",
+  "cieczka_koniec",
+  "inne",
+];
 
 const NewHealthTab = () => {
   const { dogs, healthEvents, addHealthEvent, removeHealthEvent } = useApp();
@@ -47,21 +58,21 @@ const NewHealthTab = () => {
 
   const healthTypeIcons: Record<HealthType, React.ReactNode> = {
     weterynarz: <Stethoscope className="w-5 h-5" />,
-    groomer: <Scissors className="w-5 h-5" />,
     szczepienie: <Syringe className="w-5 h-5" />,
-    cieczka_start: <Heart className="w-5 h-5 text-destructive" />,
-    cieczka_koniec: <Heart className="w-5 h-5" />,
+    groomer: <Scissors className="w-5 h-5" />,
     waga: <Scale className="w-5 h-5" />,
+    cieczka_start: <Flower2 className="w-5 h-5 text-destructive" />,
+    cieczka_koniec: <Flower2 className="w-5 h-5" />,
     inne: <MoreHorizontal className="w-5 h-5" />,
   };
 
   const healthTypeLabels: Record<HealthType, string> = {
     weterynarz: t("vet"),
-    groomer: t("groomer"),
     szczepienie: t("vaccination"),
+    groomer: t("groomer"),
+    waga: t("weight"),
     cieczka_start: t("heatStart"),
     cieczka_koniec: t("heatEnd"),
-    waga: t("weight"),
     inne: t("other"),
   };
 
@@ -88,7 +99,9 @@ const NewHealthTab = () => {
                 key={dog.id}
                 onClick={() => setSelectedDog(dog.id)}
                 className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-                  selectedDog === dog.id ? "bg-destructive/20 ring-2 ring-destructive" : "bg-secondary"
+                  selectedDog === dog.id 
+                    ? "border-2 border-destructive bg-transparent" 
+                    : "bg-secondary border-2 border-transparent"
                 }`}
               >
                 <DogAvatar dogId={dog.id} size="lg" />
@@ -97,16 +110,18 @@ const NewHealthTab = () => {
             ))}
           </div>
 
-          {/* Event type - 2 per row */}
+          {/* Event type - FIXED ORDER - 2 per row */}
           <div>
             <label className="text-sm font-semibold text-foreground block mb-2">{t("eventType")}</label>
             <div className="grid grid-cols-2 gap-2">
-              {(Object.keys(healthTypeLabels) as HealthType[]).map((type) => (
+              {HEALTH_TYPE_ORDER.map((type) => (
                 <button
                   key={type}
                   onClick={() => setEventType(type)}
                   className={`flex items-center justify-center gap-2 p-3 rounded-xl font-semibold transition-all ${
-                    eventType === type ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"
+                    eventType === type 
+                      ? "border-2 border-destructive bg-transparent text-destructive" 
+                      : "bg-secondary text-secondary-foreground border-2 border-transparent"
                   }`}
                 >
                   {healthTypeIcons[type]}
@@ -133,10 +148,10 @@ const NewHealthTab = () => {
               <label className="text-sm font-semibold text-foreground block mb-2">{t("weight")} (kg)</label>
               <input
                 type="number"
-                step="0.1"
+                step="0.01"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                placeholder="25.5"
+                placeholder="25.50"
                 className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-destructive"
               />
             </div>
