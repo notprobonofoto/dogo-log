@@ -40,6 +40,10 @@ const translations = {
     enterSavedCode: "Wpisz swój zapisany kod gospodarstwa",
     login: "Zaloguj się",
     invalidCode: "Błędny kod gospodarstwa",
+    selectMember: "Wybierz swój profil",
+    selectMemberDesc: "Kto z domowników korzysta z tej aplikacji?",
+    continueAs: "Kontynuuj jako",
+    noMembersFound: "Brak członków w tym gospodarstwie",
     
     // Home Tab
     greeting: "Cześć",
@@ -229,6 +233,10 @@ const translations = {
     enterSavedCode: "Enter your saved household code",
     login: "Log in",
     invalidCode: "Invalid household code",
+    selectMember: "Select your profile",
+    selectMemberDesc: "Who in the household is using this app?",
+    continueAs: "Continue as",
+    noMembersFound: "No members found in this household",
     
     // Home Tab
     greeting: "Hello",

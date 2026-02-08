@@ -99,6 +99,8 @@ interface AppContextType {
   createHousehold: (name: string) => Promise<{ success: boolean; code?: string; error?: string }>;
   joinHousehold: (code: string, name: string) => Promise<{ success: boolean; error?: string }>;
   loginWithCode: (code: string, name: string) => Promise<{ success: boolean; error?: string }>;
+  loginAsExistingMember: (code: string, memberId: string, memberName: string) => Promise<{ success: boolean; error?: string }>;
+  getHouseholdMembers: (code: string) => Promise<{ success: boolean; members?: Profile[]; householdId?: string; error?: string }>;
   logout: () => void;
   
   // Data actions
@@ -541,6 +543,105 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return joinHousehold(code, name);
   };
 
+  const getHouseholdMembers = async (code: string): Promise<{ success: boolean; members?: Profile[]; householdId?: string; error?: string }> => {
+    try {
+      // Ensure anonymous session
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { data } = await supabase.auth.signInAnonymously();
+        session = data.session;
+      }
+      
+      if (!session) {
+        return { success: false, error: "Could not create session" };
+      }
+
+      // Validate code exists
+      const { data: exists } = await supabase.rpc("household_code_exists", { code_to_check: code });
+      if (!exists) {
+        return { success: false, error: "invalidCode" };
+      }
+
+      // Get household ID
+      const { data: houseId } = await supabase.rpc("get_household_id_by_code", { code_to_check: code });
+      if (!houseId) {
+        return { success: false, error: "Could not find household" };
+      }
+
+      // Fetch members
+      const { data: members, error } = await supabase
+        .from("profiles")
+        .select("id, name, household_id")
+        .eq("household_id", houseId);
+
+      if (error) {
+        console.error("Error fetching members:", error);
+        return { success: false, error: "Could not fetch members" };
+      }
+
+      return { 
+        success: true, 
+        members: (members || []).map(m => ({ id: m.id, name: m.name, household_id: m.household_id })),
+        householdId: houseId
+      };
+    } catch (err) {
+      console.error("Error getting household members:", err);
+      return { success: false, error: "Unexpected error" };
+    }
+  };
+
+  const loginAsExistingMember = async (code: string, memberId: string, memberName: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      // Ensure anonymous session
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { data } = await supabase.auth.signInAnonymously();
+        session = data.session;
+      }
+      
+      if (!session) {
+        return { success: false, error: "Could not create session" };
+      }
+
+      const userId = session.user.id;
+
+      // Get household ID
+      const { data: houseId } = await supabase.rpc("get_household_id_by_code", { code_to_check: code });
+      if (!houseId) {
+        return { success: false, error: "Could not find household" };
+      }
+
+      // Update the profile to associate with current user
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ user_id: userId })
+        .eq("id", memberId);
+
+      if (updateError) {
+        console.error("Error updating profile:", updateError);
+        return { success: false, error: "Could not update profile" };
+      }
+
+      // Save to state and localStorage
+      setUserName(memberName);
+      setHouseholdCode(code);
+      setHouseholdId(houseId);
+      setProfileId(memberId);
+
+      saveLocalAuth({
+        userName: memberName,
+        householdCode: code,
+        householdId: houseId,
+        profileId: memberId,
+      });
+
+      return { success: true };
+    } catch (err) {
+      console.error("Error logging in as existing member:", err);
+      return { success: false, error: "Unexpected error" };
+    }
+  };
+
   const logout = useCallback(() => {
     clearLocalAuth();
     setUserName("");
@@ -784,6 +885,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       createHousehold,
       joinHousehold,
       loginWithCode,
+      loginAsExistingMember,
+      getHouseholdMembers,
       logout,
       addDog,
       removeDog,
