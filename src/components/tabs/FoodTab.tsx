@@ -1,43 +1,54 @@
 import { useState } from "react";
 import { useApp, MealType } from "@/contexts/AppContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import dogPaws from "@/assets/dog-paws.png";
-import { Utensils, Check, Trash2 } from "lucide-react";
+import { Utensils, Check, Trash2, Clock } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 const today = () => new Date().toISOString().split("T")[0];
 const now = () => new Date().toTimeString().slice(0, 5);
 
-const MEAL_TYPES: { value: MealType; icon: string; label: string }[] = [
-  { value: "dry", icon: "🍖", label: "Suche" },
-  { value: "wet", icon: "🍲", label: "Mokre" },
-  { value: "mixed", icon: "🥣", label: "Mieszane" },
-  { value: "treat", icon: "🦴", label: "Smaczek" },
-  { value: "other", icon: "⭐", label: "Inne" },
-];
-
 const FoodTab = () => {
   const { data, addMeal, removeMeal } = useApp();
+  const { t } = useLanguage();
+  
   const [showForm, setShowForm] = useState(false);
   const [dogId, setDogId] = useState("");
   const [mealType, setMealType] = useState<MealType>("dry");
+  const [mealDate, setMealDate] = useState(today());
+  const [mealTime, setMealTime] = useState(now());
   const [success, setSuccess] = useState(false);
   const [hearts, setHearts] = useState<number[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const MEAL_TYPES: { value: MealType; icon: string; label: string }[] = [
+    { value: "dry", icon: "🍖", label: t("dry") },
+    { value: "wet", icon: "🍲", label: t("wet") },
+    { value: "mixed", icon: "🥣", label: t("mixed") },
+    { value: "treat", icon: "🦴", label: t("treat") },
+    { value: "other", icon: "⭐", label: t("other") },
+  ];
+
   const handleSubmit = () => {
     if (!dogId) return;
-    addMeal({ dogId, date: today(), time: now(), type: mealType, userId: data.userName });
+    addMeal({ dogId, date: mealDate, time: mealTime, type: mealType, userId: data.userName });
     setSuccess(true);
     setHearts((h) => [...h, Date.now()]);
-    setTimeout(() => { setSuccess(false); setShowForm(false); setDogId(""); }, 1500);
+    setTimeout(() => { 
+      setSuccess(false); 
+      setShowForm(false); 
+      setDogId(""); 
+      setMealDate(today());
+      setMealTime(now());
+    }, 1500);
   };
 
   const todayMeals = data.meals.filter((m) => m.date === today());
-  const getMealIcon = (type: MealType) => MEAL_TYPES.find((t) => t.value === type)?.icon || "🍽️";
+  const getMealIcon = (type: MealType) => MEAL_TYPES.find((mt) => mt.value === type)?.icon || "🍽️";
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-safe relative overflow-hidden">
+    <div className="min-h-screen pb-24 px-4 pt-safe relative overflow-hidden">
       {hearts.map((key) => (
         <div key={key} className="absolute animate-heart-float text-2xl" style={{ left: `${Math.random() * 60 + 20}%`, top: "40%" }}>
           ❤️
@@ -45,10 +56,10 @@ const FoodTab = () => {
       ))}
 
       <div className="flex items-center justify-center gap-3 pt-4 mb-2">
-        <h1 className="text-xl font-extrabold text-foreground">Jedzenie</h1>
+        <h1 className="text-xl font-extrabold text-foreground">{t("foodTitle")}</h1>
       </div>
       <div className="flex justify-center mb-4">
-        <img src={dogPaws} alt="" className="w-20 h-20 animate-breathe" />
+        <img src={dogPaws} alt="" className="w-24 h-24 animate-breathe" />
       </div>
 
       {!showForm && (
@@ -57,7 +68,7 @@ const FoodTab = () => {
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
           <Utensils className="w-5 h-5" />
-          <span className="text-sm">Dodaj posiłek</span>
+          <span className="text-sm">{t("addMeal")}</span>
         </button>
       )}
 
@@ -66,48 +77,77 @@ const FoodTab = () => {
           {success ? (
             <div className="text-center py-8 animate-pop-in">
               <Check className="w-12 h-12 mx-auto text-success mb-2" />
-              <p className="font-bold text-foreground">Zapisano! ❤️</p>
+              <p className="font-bold text-foreground">{t("saved")}</p>
             </div>
           ) : (
             <>
-              <h3 className="font-bold text-foreground">Kto jada?</h3>
+              <h3 className="font-bold text-foreground">{t("whoEats")}</h3>
               {data.dogs.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Najpierw dodaj pieska</p>
+                <p className="text-sm text-muted-foreground">{t("addDogFirst")}</p>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {data.dogs.map((dog) => (
                     <button
                       key={dog.id}
                       onClick={() => setDogId(dog.id)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-full font-semibold text-sm transition-all ${
+                      className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl font-semibold text-sm transition-all ${
                         dogId === dog.id ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground"
                       }`}
                     >
-                      <DogAvatar dogId={dog.id} size="sm" />
+                      <DogAvatar dogId={dog.id} size="md" />
+                      <span className="text-[10px]">{dog.name}</span>
                     </button>
                   ))}
                 </div>
               )}
               <div>
-                <label className="text-sm font-semibold text-foreground">Typ</label>
+                <label className="text-sm font-semibold text-foreground">{t("type")}</label>
                 <div className="grid grid-cols-5 gap-2 mt-2">
-                  {MEAL_TYPES.map((t) => (
+                  {MEAL_TYPES.map((mt) => (
                     <button
-                      key={t.value}
-                      onClick={() => setMealType(t.value)}
+                      key={mt.value}
+                      onClick={() => setMealType(mt.value)}
                       className={`flex flex-col items-center py-2 rounded-xl font-bold transition-all ${
-                        mealType === t.value ? "bg-accent text-accent-foreground" : "bg-muted"
+                        mealType === mt.value ? "bg-accent text-accent-foreground" : "bg-muted"
                       }`}
-                      title={t.label}
+                      title={mt.label}
                     >
-                      <span className="text-xl">{t.icon}</span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5">{t.label}</span>
+                      <span className="text-xl">{mt.icon}</span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5">{mt.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
+
+              {/* Date/Time for backdating */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                    📅 {t("date")}
+                  </label>
+                  <input
+                    type="date"
+                    value={mealDate}
+                    max={today()}
+                    onChange={(e) => setMealDate(e.target.value)}
+                    className="w-full mt-1 rounded-lg border border-border bg-background px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                    <Clock className="w-4 h-4" /> {t("time")}
+                  </label>
+                  <input
+                    type="time"
+                    value={mealTime}
+                    onChange={(e) => setMealTime(e.target.value)}
+                    className="w-full mt-1 rounded-lg border border-border bg-background px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
               <div className="flex gap-2">
-                <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-lg bg-muted text-muted-foreground font-semibold">Anuluj</button>
+                <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-lg bg-muted text-muted-foreground font-semibold">{t("cancel")}</button>
                 <button onClick={handleSubmit} disabled={!dogId} className="flex-1 py-2 rounded-lg bg-accent text-accent-foreground font-bold disabled:opacity-40">✓</button>
               </div>
             </>
@@ -117,27 +157,33 @@ const FoodTab = () => {
 
       <div className="space-y-2">
         <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
-          <Utensils className="w-4 h-4" /> Dziś: {todayMeals.length}
+          <Utensils className="w-4 h-4" /> {t("today")}: {todayMeals.length}
         </h3>
-        {todayMeals.length === 0 && <p className="text-sm text-muted-foreground">Brak posiłków</p>}
-        {todayMeals.map((meal, i) => (
-          <div key={meal.id} className="flex items-center justify-between gap-3 bg-card rounded-xl p-3 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
-            <div className="flex items-center gap-3">
-              <DogAvatar dogId={meal.dogId} size="sm" />
-              <span className="text-xl">{getMealIcon(meal.type)}</span>
-              <span className="text-xs text-muted-foreground">{meal.time}</span>
+        {todayMeals.length === 0 && <p className="text-sm text-muted-foreground">{t("noMeals")}</p>}
+        {todayMeals.map((meal, i) => {
+          const dog = data.dogs.find(d => d.id === meal.dogId);
+          return (
+            <div key={meal.id} className="flex items-center justify-between gap-3 bg-card rounded-xl p-3 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center">
+                  <DogAvatar dogId={meal.dogId} size="md" />
+                  <span className="text-[10px] font-medium">{dog?.name}</span>
+                </div>
+                <span className="text-xl">{getMealIcon(meal.type)}</span>
+                <span className="text-xs text-muted-foreground">{meal.time}</span>
+              </div>
+              <button onClick={() => setDeleteId(meal.id)} className="p-2 text-muted-foreground active:scale-95">
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={() => setDeleteId(meal.id)} className="p-2 text-muted-foreground active:scale-95">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <ConfirmDialog
         open={!!deleteId}
-        title="Usuń posiłek?"
-        message="Czy na pewno chcesz usunąć ten posiłek?"
+        title={t("deleteMeal")}
+        message={t("deleteMealConfirm")}
         onConfirm={() => { if (deleteId) { removeMeal(deleteId); setDeleteId(null); } }}
         onCancel={() => setDeleteId(null)}
       />

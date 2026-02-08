@@ -1,29 +1,62 @@
 @tailwind base;
 
-/* Paw drift animation for background */
-@keyframes paw-drift {
+/* Paw drift animation for background - smooth continuous movement */
+@keyframes paw-drift-smooth {
   0% {
-    opacity: 0;
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
   }
-  10% {
-    opacity: 0.3;
+  25% {
+    transform: translateY(-25vh) translateX(10px) rotate(45deg) scale(1.05);
   }
   50% {
-    opacity: 0.15;
+    transform: translateY(-50vh) translateX(-10px) rotate(90deg) scale(1);
   }
-  90% {
-    opacity: 0.3;
+  75% {
+    transform: translateY(-75vh) translateX(15px) rotate(135deg) scale(0.95);
   }
   100% {
-    opacity: 0;
-    transform: translateY(-100vh) rotate(360deg);
+    transform: translateY(-100vh) translateX(0) rotate(180deg) scale(1);
   }
 }
 
-.animate-paw-drift {
-  animation: paw-drift linear infinite;
+.animate-paw-drift-smooth {
+  animation: paw-drift-smooth linear infinite;
 }
+
+/* Greeting animation */
+@keyframes greeting {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-greeting {
+  animation: greeting 0.6s ease-out forwards;
+}
+
+/* Wave hand animation */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(14deg); }
+  40% { transform: rotate(-8deg); }
+  60% { transform: rotate(14deg); }
+  80% { transform: rotate(-4deg); }
+}
+
+.animate-wave {
+  animation: wave 1.5s ease-in-out infinite;
+  transform-origin: 70% 70%;
+}
+
 @tailwind components;
 @tailwind utilities;
 

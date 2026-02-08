@@ -1,12 +1,10 @@
 import { useState, useMemo } from "react";
 import { useApp, MealType } from "@/contexts/AppContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import dogFull from "@/assets/dog-full.png";
 import { ChevronLeft, ChevronRight, PawPrint, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
-
-const DAYS = ["Pn", "Wt", "Śr", "Cz", "Pt", "Sb", "Nd"];
-const MONTHS = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
 
 const fmt = (d: Date) => d.toISOString().split("T")[0];
 
@@ -20,6 +18,16 @@ const MEAL_ICONS: Record<MealType, string> = {
 
 const CalendarTab = () => {
   const { data, removeWalk, removeMeal, removeHealthEvent, removeHomeAccident } = useApp();
+  const { language, t } = useLanguage();
+  
+  const DAYS = language === "pl" 
+    ? ["Pn", "Wt", "Śr", "Cz", "Pt", "Sb", "Nd"]
+    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    
+  const MONTHS = language === "pl"
+    ? ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"]
+    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
   const [selectedDate, setSelectedDate] = useState(fmt(new Date()));
@@ -76,10 +84,10 @@ const CalendarTab = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-safe">
+    <div className="min-h-screen pb-24 px-4 pt-safe">
       <div className="flex items-center justify-center gap-3 pt-4 mb-4">
-        <img src={dogFull} alt="" className="w-12 h-12 animate-float" />
-        <h1 className="text-xl font-extrabold text-foreground">Kalendarz</h1>
+        <img src={dogFull} alt="" className="w-14 h-14 animate-float" />
+        <h1 className="text-xl font-extrabold text-foreground">{t("calendarTitle")}</h1>
       </div>
 
       <div className="flex items-center justify-between bg-card rounded-xl p-3 mb-3 animate-fade-in-up">
@@ -126,73 +134,100 @@ const CalendarTab = () => {
       </div>
 
       <div className="space-y-2 animate-fade-in-up delay-200">
-        <h3 className="font-bold text-foreground text-sm">{selectedDate === todayStr ? "Dzisiaj" : selectedDate}</h3>
-        {!selectedEvents && <p className="text-sm text-muted-foreground">Brak wydarzeń</p>}
+        <h3 className="font-bold text-foreground text-sm">{selectedDate === todayStr ? t("today") : selectedDate}</h3>
+        {!selectedEvents && <p className="text-sm text-muted-foreground">{t("noEvents")}</p>}
         
-        {selectedWalks.map((w) => (
-          <div key={w.id} className="flex items-center justify-between bg-primary/10 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <PawPrint className="w-4 h-4 text-primary" />
-              <div className="flex -space-x-1">
-                {w.dogIds.map((id) => <DogAvatar key={id} dogId={id} size="sm" />)}
+        {selectedWalks.map((w) => {
+          return (
+            <div key={w.id} className="flex items-center justify-between bg-primary/10 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <PawPrint className="w-4 h-4 text-primary" />
+                <div className="flex -space-x-1">
+                  {w.dogIds.map((id) => {
+                    const dog = data.dogs.find(d => d.id === id);
+                    return (
+                      <div key={id} className="flex flex-col items-center">
+                        <DogAvatar dogId={id} size="md" />
+                      </div>
+                    );
+                  })}
+                </div>
+                <span className="text-sm font-semibold">{w.duration}′</span>
+                <span className="text-lg">
+                  {w.business === "pee" && "💧"}
+                  {w.business === "poop" && "💩"}
+                  {w.business === "both" && "💧💩"}
+                </span>
               </div>
-              <span className="text-sm font-semibold">{w.duration}′</span>
-              <span className="text-lg">
-                {w.business === "pee" && "💧"}
-                {w.business === "poop" && "💩"}
-                {w.business === "both" && "💧💩"}
-              </span>
+              <button onClick={() => setDeleteItem({ type: "walk", id: w.id })} className="p-1 text-muted-foreground active:scale-95">
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={() => setDeleteItem({ type: "walk", id: w.id })} className="p-1 text-muted-foreground active:scale-95">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
         
-        {selectedMeals.map((m) => (
-          <div key={m.id} className="flex items-center justify-between bg-accent/10 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{MEAL_ICONS[m.type]}</span>
-              <DogAvatar dogId={m.dogId} size="sm" />
-              <span className="text-xs text-muted-foreground">{m.time}</span>
+        {selectedMeals.map((m) => {
+          const dog = data.dogs.find(d => d.id === m.dogId);
+          return (
+            <div key={m.id} className="flex items-center justify-between bg-accent/10 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{MEAL_ICONS[m.type]}</span>
+                <div className="flex flex-col items-center">
+                  <DogAvatar dogId={m.dogId} size="md" />
+                  <span className="text-[10px] font-medium">{dog?.name}</span>
+                </div>
+                <span className="text-xs text-muted-foreground">{m.time}</span>
+              </div>
+              <button onClick={() => setDeleteItem({ type: "meal", id: m.id })} className="p-1 text-muted-foreground active:scale-95">
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={() => setDeleteItem({ type: "meal", id: m.id })} className="p-1 text-muted-foreground active:scale-95">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
         
-        {selectedHealth.map((h) => (
-          <div key={h.id} className="flex items-center justify-between bg-destructive/10 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{getHealthIcon(h.type)}</span>
-              <DogAvatar dogId={h.dogId} size="sm" />
-              {h.note && <span className="text-xs text-muted-foreground">{h.note}</span>}
+        {selectedHealth.map((h) => {
+          const dog = data.dogs.find(d => d.id === h.dogId);
+          return (
+            <div key={h.id} className="flex items-center justify-between bg-destructive/10 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{getHealthIcon(h.type)}</span>
+                <div className="flex flex-col items-center">
+                  <DogAvatar dogId={h.dogId} size="md" />
+                  <span className="text-[10px] font-medium">{dog?.name}</span>
+                </div>
+                {h.note && <span className="text-xs text-muted-foreground">{h.note}</span>}
+              </div>
+              <button onClick={() => setDeleteItem({ type: "health", id: h.id })} className="p-1 text-muted-foreground active:scale-95">
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={() => setDeleteItem({ type: "health", id: h.id })} className="p-1 text-muted-foreground active:scale-95">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
 
-        {selectedAccidents.map((a) => (
-          <div key={a.id} className="flex items-center justify-between bg-warning/10 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">🏠{a.type === "pee" ? "💧" : "💩"}</span>
-              <DogAvatar dogId={a.dogId} size="sm" />
-              <span className="text-xs text-muted-foreground">{a.time}</span>
+        {selectedAccidents.map((a) => {
+          const dog = data.dogs.find(d => d.id === a.dogId);
+          return (
+            <div key={a.id} className="flex items-center justify-between bg-warning/10 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🏠{a.type === "pee" ? "💧" : "💩"}</span>
+                <div className="flex flex-col items-center">
+                  <DogAvatar dogId={a.dogId} size="md" />
+                  <span className="text-[10px] font-medium">{dog?.name}</span>
+                </div>
+                <span className="text-xs text-muted-foreground">{a.time}</span>
+              </div>
+              <button onClick={() => setDeleteItem({ type: "accident", id: a.id })} className="p-1 text-muted-foreground active:scale-95">
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={() => setDeleteItem({ type: "accident", id: a.id })} className="p-1 text-muted-foreground active:scale-95">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <ConfirmDialog
         open={!!deleteItem}
-        title="Usuń?"
-        message="Czy na pewno chcesz usunąć to zdarzenie?"
+        title={t("deleteEvent")}
+        message={t("deleteEventConfirm")}
         onConfirm={handleDelete}
         onCancel={() => setDeleteItem(null)}
       />

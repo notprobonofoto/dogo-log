@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import dogPaws from "@/assets/dog-paws.png";
+import LanguageSelector from "./LanguageSelector";
 
 const generateCode = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const Onboarding = () => {
   const { completeOnboarding } = useApp();
+  const { t } = useLanguage();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [mode, setMode] = useState<"create" | "join" | "login" | null>(null);
@@ -35,13 +38,18 @@ const Onboarding = () => {
 
       {step === 0 && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-6">
-          <h1 className="text-2xl font-extrabold text-foreground">Witaj w DogoLog! 🐾</h1>
-          <p className="text-muted-foreground">Jak masz na imię?</p>
+          <h1 className="text-2xl font-extrabold text-foreground">{t("welcomeTitle")}</h1>
+          
+          <div className="flex justify-center mb-4">
+            <LanguageSelector />
+          </div>
+          
+          <p className="text-muted-foreground">{t("ownerNamePlaceholder")}</p>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Twoje imię..."
+            placeholder={t("ownerNamePlaceholder")}
             className="w-full rounded-lg border border-border bg-card px-4 py-3 text-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             autoFocus
           />
@@ -50,40 +58,40 @@ const Onboarding = () => {
             disabled={!name.trim()}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            Dalej →
+            {t("next")}
           </button>
         </div>
       )}
 
       {step === 1 && !mode && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
-          <h2 className="text-xl font-bold text-foreground">Cześć, {name}! 👋</h2>
-          <p className="text-muted-foreground text-sm">Co chcesz zrobić?</p>
+          <h2 className="text-xl font-bold text-foreground">{t("hello")}, {name}! 👋</h2>
+          <p className="text-muted-foreground text-sm">{t("whatToDo")}</p>
           <button
             onClick={() => setMode("create")}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            ➕ Stwórz nowe gospodarstwo
+            {t("createHousehold")}
           </button>
           <button
             onClick={() => setMode("join")}
             className="w-full py-3 rounded-lg bg-secondary text-secondary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-100"
           >
-            👥 Dołącz do czyjegoś gospodarstwa
+            {t("joinHousehold")}
           </button>
           <button
             onClick={() => setMode("login")}
             className="w-full py-3 rounded-lg bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-200"
           >
-            🔑 Zaloguj się ponownie
+            {t("loginAgain")}
           </button>
         </div>
       )}
 
       {step === 1 && mode === "create" && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
-          <h2 className="text-xl font-bold text-foreground">Twój kod gospodarstwa</h2>
-          <p className="text-muted-foreground text-sm">Udostępnij go domownikom, żeby mogli dołączyć</p>
+          <h2 className="text-xl font-bold text-foreground">{t("yourHouseholdCode")}</h2>
+          <p className="text-muted-foreground text-sm">{t("shareCode")}</p>
           <div className="text-4xl font-black tracking-[0.3em] text-primary animate-pop-in bg-card rounded-xl py-4">
             {generatedCode}
           </div>
@@ -91,15 +99,15 @@ const Onboarding = () => {
             onClick={handleNext}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            Zacznijmy! 🐶
+            {t("letsStart")}
           </button>
         </div>
       )}
 
       {step === 1 && mode === "join" && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
-          <h2 className="text-xl font-bold text-foreground">Dołącz do gospodarstwa</h2>
-          <p className="text-muted-foreground text-sm">Wpisz 6-cyfrowy kod od domownika</p>
+          <h2 className="text-xl font-bold text-foreground">{t("joinHouseholdTitle")}</h2>
+          <p className="text-muted-foreground text-sm">{t("enterCode")}</p>
           <input
             type="text"
             value={code}
@@ -114,18 +122,18 @@ const Onboarding = () => {
             disabled={code.length !== 6}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            Dołącz! 🐾
+            {t("join")}
           </button>
           <button onClick={() => setMode(null)} className="text-sm text-muted-foreground underline">
-            ← Wróć
+            {t("back")}
           </button>
         </div>
       )}
 
       {step === 1 && mode === "login" && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
-          <h2 className="text-xl font-bold text-foreground">Witaj ponownie! 🐶</h2>
-          <p className="text-muted-foreground text-sm">Wpisz swój zapisany kod gospodarstwa</p>
+          <h2 className="text-xl font-bold text-foreground">{t("welcomeBack")}</h2>
+          <p className="text-muted-foreground text-sm">{t("enterSavedCode")}</p>
           <input
             type="text"
             value={code}
@@ -140,10 +148,10 @@ const Onboarding = () => {
             disabled={code.length !== 6}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            Zaloguj się! 🔓
+            {t("login")}
           </button>
           <button onClick={() => setMode(null)} className="text-sm text-muted-foreground underline">
-            ← Wróć
+            {t("back")}
           </button>
         </div>
       )}

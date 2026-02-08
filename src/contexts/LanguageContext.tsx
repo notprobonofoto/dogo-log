@@ -1,0 +1,311 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+
+export type Language = "pl" | "en";
+
+const translations = {
+  pl: {
+    // Common
+    cancel: "Anuluj",
+    save: "Zapisz",
+    delete: "Usuń",
+    today: "Dziś",
+    none: "Brak",
+    
+    // Onboarding
+    welcomeTitle: "Witaj w DogoLog! 🐾",
+    ownerNamePlaceholder: "Imię właściciela psa",
+    next: "Dalej →",
+    hello: "Cześć",
+    whatToDo: "Co chcesz zrobić?",
+    createHousehold: "➕ Stwórz nowe gospodarstwo",
+    joinHousehold: "👥 Dołącz do czyjegoś gospodarstwa",
+    loginAgain: "🔑 Zaloguj się ponownie",
+    yourHouseholdCode: "Twój kod gospodarstwa",
+    shareCode: "Udostępnij go domownikom, żeby mogli dołączyć",
+    letsStart: "Zacznijmy! 🐶",
+    joinHouseholdTitle: "Dołącz do gospodarstwa",
+    enterCode: "Wpisz 6-cyfrowy kod od domownika",
+    join: "Dołącz! 🐾",
+    back: "← Wróć",
+    welcomeBack: "Witaj ponownie! 🐶",
+    enterSavedCode: "Wpisz swój zapisany kod gospodarstwa",
+    login: "Zaloguj się! 🔓",
+    
+    // Home Tab
+    greeting: "Cześć",
+    walks: "Spacery",
+    meals: "Posiłki",
+    health: "Zdrowie",
+    dogs: "Pieski",
+    householdCode: "Kod gospodarstwa",
+    install: "Instaluj",
+    logout: "Wyloguj",
+    dogHappiness: "Szczęście psów",
+    
+    // Walks Tab
+    walksTitle: "Spacery",
+    newWalk: "Nowy spacer",
+    atHome: "W domu",
+    homeEvent: "🏠 Zdarzenie w domu",
+    addDogFirst: "Najpierw dodaj pieska",
+    whoWent: "Kto szedł?",
+    whatDidTheyDo: "Co zrobił?",
+    duration: "Długość",
+    min: "min",
+    walkSaved: "Spacer zapisany! 🐾",
+    noWalks: "Brak spacerów",
+    pee: "Siku",
+    poop: "Kupa",
+    both: "Oba",
+    nothing: "Nic",
+    
+    // Food Tab
+    foodTitle: "Jedzenie",
+    addMeal: "Dodaj posiłek",
+    whoEats: "Kto jada?",
+    type: "Typ",
+    saved: "Zapisano! ❤️",
+    noMeals: "Brak posiłków",
+    dry: "Suche",
+    wet: "Mokre",
+    mixed: "Mieszane",
+    treat: "Smaczek",
+    other: "Inne",
+    
+    // Health Tab
+    healthTitle: "Zdrowie",
+    newEvent: "Nowe zdarzenie",
+    dog: "Piesek",
+    eventType: "Rodzaj",
+    weight: "Waga",
+    date: "Data",
+    time: "Godzina",
+    noteOptional: "Notatka (opcjonalnie)",
+    nextVisit: "Następna",
+    healthSaved: "Zapisano! 💚",
+    upcoming: "Nadchodzące",
+    history: "Historia",
+    noEvents: "Brak zdarzeń",
+    vet: "Weterynarz",
+    groomer: "Groomer",
+    vaccination: "Szczepienie",
+    heatStart: "Cieczka ▶",
+    heatEnd: "Cieczka ■",
+    otherEvent: "Inne",
+    
+    // Calendar
+    calendarTitle: "Kalendarz",
+    
+    // Dogs
+    dogsTitle: "Pieski",
+    addDog: "Dodaj pieska",
+    name: "Imię",
+    birthDate: "Data urodzenia",
+    sex: "Płeć",
+    male: "Samiec",
+    female: "Samica",
+    breed: "Rasa",
+    breedOptional: "opcjonalnie",
+    
+    // Dialogs
+    deleteWalk: "Usuń spacer?",
+    deleteWalkConfirm: "Czy na pewno chcesz usunąć ten spacer?",
+    deleteEvent: "Usuń zdarzenie?",
+    deleteEventConfirm: "Czy na pewno chcesz usunąć to zdarzenie?",
+    deleteMeal: "Usuń posiłek?",
+    deleteMealConfirm: "Czy na pewno chcesz usunąć ten posiłek?",
+    deleteHealthEvent: "Usuń zdarzenie?",
+    deleteHealthConfirm: "Czy na pewno chcesz usunąć to zdarzenie zdrowotne?",
+    
+    // Logout
+    logoutTitle: "Wylogowanie",
+    saveCodeWarning: "⚠️ Zapisz kod gospodarstwa!",
+    needCodeToLogin: "Będziesz go potrzebować do ponownego zalogowania:",
+    copyCode: "Skopiuj kod",
+    copied: "Skopiowano!",
+    loseAccessWarning: "Po wylogowaniu utracisz dostęp do danych, chyba że podasz ten kod ponownie.",
+    
+    // Reminders
+    tomorrow: "Jutro!",
+    inTwoDays: "Za 2 dni",
+    walkReminder: "Z reguły wychodzisz o tej godzinie z psem — może warto się zbierać?",
+    
+    // Settings
+    language: "Język",
+    settings: "Ustawienia",
+  },
+  en: {
+    // Common
+    cancel: "Cancel",
+    save: "Save",
+    delete: "Delete",
+    today: "Today",
+    none: "None",
+    
+    // Onboarding
+    welcomeTitle: "Welcome to DogoLog! 🐾",
+    ownerNamePlaceholder: "Dog owner's name",
+    next: "Next →",
+    hello: "Hello",
+    whatToDo: "What would you like to do?",
+    createHousehold: "➕ Create new household",
+    joinHousehold: "👥 Join someone's household",
+    loginAgain: "🔑 Log in again",
+    yourHouseholdCode: "Your household code",
+    shareCode: "Share it with family members so they can join",
+    letsStart: "Let's start! 🐶",
+    joinHouseholdTitle: "Join household",
+    enterCode: "Enter the 6-digit code from a family member",
+    join: "Join! 🐾",
+    back: "← Back",
+    welcomeBack: "Welcome back! 🐶",
+    enterSavedCode: "Enter your saved household code",
+    login: "Log in! 🔓",
+    
+    // Home Tab
+    greeting: "Hello",
+    walks: "Walks",
+    meals: "Meals",
+    health: "Health",
+    dogs: "Dogs",
+    householdCode: "Household code",
+    install: "Install",
+    logout: "Logout",
+    dogHappiness: "Dog Happiness",
+    
+    // Walks Tab
+    walksTitle: "Walks",
+    newWalk: "New walk",
+    atHome: "At home",
+    homeEvent: "🏠 Home event",
+    addDogFirst: "Add a dog first",
+    whoWent: "Who went?",
+    whatDidTheyDo: "What did they do?",
+    duration: "Duration",
+    min: "min",
+    walkSaved: "Walk saved! 🐾",
+    noWalks: "No walks",
+    pee: "Pee",
+    poop: "Poop",
+    both: "Both",
+    nothing: "None",
+    
+    // Food Tab
+    foodTitle: "Food",
+    addMeal: "Add meal",
+    whoEats: "Who's eating?",
+    type: "Type",
+    saved: "Saved! ❤️",
+    noMeals: "No meals",
+    dry: "Dry",
+    wet: "Wet",
+    mixed: "Mixed",
+    treat: "Treat",
+    other: "Other",
+    
+    // Health Tab
+    healthTitle: "Health",
+    newEvent: "New event",
+    dog: "Dog",
+    eventType: "Type",
+    weight: "Weight",
+    date: "Date",
+    time: "Time",
+    noteOptional: "Note (optional)",
+    nextVisit: "Next visit",
+    healthSaved: "Saved! 💚",
+    upcoming: "Upcoming",
+    history: "History",
+    noEvents: "No events",
+    vet: "Vet",
+    groomer: "Groomer",
+    vaccination: "Vaccination",
+    heatStart: "Heat ▶",
+    heatEnd: "Heat ■",
+    otherEvent: "Other",
+    
+    // Calendar
+    calendarTitle: "Calendar",
+    
+    // Dogs
+    dogsTitle: "Dogs",
+    addDog: "Add dog",
+    name: "Name",
+    birthDate: "Birth date",
+    sex: "Sex",
+    male: "Male",
+    female: "Female",
+    breed: "Breed",
+    breedOptional: "optional",
+    
+    // Dialogs
+    deleteWalk: "Delete walk?",
+    deleteWalkConfirm: "Are you sure you want to delete this walk?",
+    deleteEvent: "Delete event?",
+    deleteEventConfirm: "Are you sure you want to delete this event?",
+    deleteMeal: "Delete meal?",
+    deleteMealConfirm: "Are you sure you want to delete this meal?",
+    deleteHealthEvent: "Delete event?",
+    deleteHealthConfirm: "Are you sure you want to delete this health event?",
+    
+    // Logout
+    logoutTitle: "Logout",
+    saveCodeWarning: "⚠️ Save your household code!",
+    needCodeToLogin: "You'll need it to log in again:",
+    copyCode: "Copy code",
+    copied: "Copied!",
+    loseAccessWarning: "After logging out, you'll lose access to data unless you enter this code again.",
+    
+    // Reminders
+    tomorrow: "Tomorrow!",
+    inTwoDays: "In 2 days",
+    walkReminder: "You usually go out at this time — maybe it's time to get ready?",
+    
+    // Settings
+    language: "Language",
+    settings: "Settings",
+  },
+} as const;
+
+export type TranslationKey = keyof typeof translations.pl;
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: TranslationKey) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType | null>(null);
+
+const LANGUAGE_KEY = "dogolog_language";
+
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem(LANGUAGE_KEY);
+    return (saved === "en" || saved === "pl") ? saved : "pl";
+  });
+
+  useEffect(() => {
+    localStorage.setItem(LANGUAGE_KEY, language);
+  }, [language]);
+
+  const setLanguage = useCallback((lang: Language) => {
+    setLanguageState(lang);
+  }, []);
+
+  const t = useCallback((key: TranslationKey): string => {
+    return translations[language][key] || translations.pl[key] || key;
+  }, [language]);
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => {
+  const ctx = useContext(LanguageContext);
+  if (!ctx) throw new Error("useLanguage must be within LanguageProvider");
+  return ctx;
+};
