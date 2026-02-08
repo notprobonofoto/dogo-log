@@ -18,6 +18,7 @@ export interface Dog {
 }
 
 export type WalkBusiness = "pee" | "poop" | "both" | "none";
+export type WalkLocation = "outside" | "home";
 
 export interface Walk {
   id: string;
@@ -28,6 +29,7 @@ export interface Walk {
   profile_id: string | null;
   profile_name?: string;
   business: WalkBusiness;
+  note?: string;
 }
 
 export type HomeAccident = "pee" | "poop";
@@ -50,6 +52,7 @@ export interface Meal {
   type: MealType;
   profile_id: string | null;
   profile_name?: string;
+  note?: string;
 }
 
 export interface HealthEvent {
@@ -103,9 +106,9 @@ interface AppContextType {
   removeDog: (id: string) => Promise<void>;
   addDogPhoto: (dogId: string, dataUrl: string) => Promise<void>;
   removeDogPhoto: (dogId: string, photoId: string) => Promise<void>;
-  addWalk: (walk: { dogIds: string[]; date: string; time: string; duration: number; business: WalkBusiness }) => Promise<void>;
+  addWalk: (walk: { dogIds: string[]; date: string; time: string; duration: number; business: WalkBusiness; note?: string }) => Promise<void>;
   removeWalk: (id: string) => Promise<void>;
-  addMeal: (meal: Omit<Meal, "id" | "profile_id" | "profile_name">) => Promise<void>;
+  addMeal: (meal: Omit<Meal, "id" | "profile_id" | "profile_name"> & { note?: string }) => Promise<void>;
   removeMeal: (id: string) => Promise<void>;
   addHealthEvent: (event: Omit<HealthEvent, "id">) => Promise<void>;
   removeHealthEvent: (id: string) => Promise<void>;
@@ -164,6 +167,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const isOnboarded = !!householdId && !!householdCode && !!userName;
 
+  // Helper to set session household for RLS
+  const setSessionHousehold = async (hId: string) => {
+    try {
+      await supabase.rpc("set_session_household", { household_id_param: hId });
+    } catch (err) {
+      console.error("Error setting session household:", err);
+    }
+  };
+
   // Initialize anonymous session on mount
   useEffect(() => {
     const init = async () => {
@@ -182,6 +194,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         });
         
         if (exists) {
+          // Set session household for RLS policies
+          await setSessionHousehold(savedAuth.householdId);
+          
           setUserName(savedAuth.userName);
           setHouseholdCode(savedAuth.householdCode);
           setHouseholdId(savedAuth.householdId);
@@ -436,6 +451,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return { success: false, error: "Could not create profile" };
       }
       
+      // Set session household for RLS policies
+      await setSessionHousehold(household.id);
+      
       // Save to state and localStorage
       setUserName(name);
       setHouseholdCode(code);
@@ -494,6 +512,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         console.error("Error creating profile:", profileError);
         return { success: false, error: "Could not create profile" };
       }
+      
+      // Set session household for RLS policies
+      await setSessionHousehold(houseId);
       
       // Save to state and localStorage
       setUserName(name);
