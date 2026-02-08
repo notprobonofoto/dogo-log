@@ -1,7 +1,6 @@
-import * as React from "react";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
 
-const LanguageSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
+const LanguageSelector = () => {
   const { language, setLanguage, t } = useLanguage();
 
   const languages: { code: Language; flag: string; name: string }[] = [
@@ -10,7 +9,7 @@ const LanguageSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
   ];
 
   return (
-    <div ref={ref} className="space-y-2">
+    <div className="space-y-2">
       <label className="text-sm font-semibold text-muted-foreground">
         {t("language")}
       </label>
@@ -32,8 +31,6 @@ const LanguageSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
       </div>
     </div>
   );
-});
-
-LanguageSelector.displayName = "LanguageSelector";
+};
 
 export default LanguageSelector;
