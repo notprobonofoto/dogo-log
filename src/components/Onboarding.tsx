@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useApp, Profile } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/dogolog-logo.png";
 import LanguageSelector from "./LanguageSelector";
 import { User, ChevronRight } from "lucide-react";
 

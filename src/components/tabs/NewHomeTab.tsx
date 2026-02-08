@@ -1,6 +1,6 @@
 import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/dogolog-logo.png";
 import { PawPrint, Utensils, Heart, Dog, Settings, Copy, LogOut, Download, Bell } from "lucide-react";
 import { useState } from "react";
 import DogAvatar from "@/components/DogAvatar";
