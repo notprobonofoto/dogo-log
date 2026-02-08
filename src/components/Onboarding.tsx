@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, Profile } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import dogPaws from "@/assets/dog-paws.png";
 import LanguageSelector from "./LanguageSelector";
+import { User, ChevronRight } from "lucide-react";
 
 const LOCAL_STORAGE_KEY = "dogolog_auth";
 
 const Onboarding = () => {
-  const { createHousehold, joinHousehold, loginWithCode } = useApp();
+  const { createHousehold, joinHousehold, loginAsExistingMember, getHouseholdMembers } = useApp();
   const { t } = useLanguage();
-  const [step, setStep] = useState<"choose" | "name">("choose");
+  const [step, setStep] = useState<"choose" | "name" | "code" | "selectMember">("choose");
   const [name, setName] = useState("");
   const [mode, setMode] = useState<"create" | "join" | "login" | null>(null);
   const [code, setCode] = useState("");
@@ -17,6 +18,8 @@ const Onboarding = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [hasLocalCode, setHasLocalCode] = useState(false);
+  const [householdMembers, setHouseholdMembers] = useState<Profile[]>([]);
+  const [validatedHouseholdId, setValidatedHouseholdId] = useState<string | null>(null);
 
   // Check if there's a saved code in localStorage
   useEffect(() => {
@@ -69,20 +72,41 @@ const Onboarding = () => {
     setIsSubmitting(false);
   };
 
-  const handleLoginWithCode = async () => {
-    if (!name.trim() || code.length !== 6) return;
+  const handleValidateCode = async () => {
+    if (code.length !== 6) return;
     
     setIsSubmitting(true);
     setErrorMessage("");
     
-    const result = await loginWithCode(code, name.trim());
+    const result = await getHouseholdMembers(code);
     
-    if (!result.success) {
+    if (result.success && result.members && result.householdId) {
+      setHouseholdMembers(result.members);
+      setValidatedHouseholdId(result.householdId);
+      if (result.members.length > 0) {
+        setStep("selectMember");
+      } else {
+        setErrorMessage(t("noMembersFound"));
+      }
+    } else {
       if (result.error === "invalidCode") {
         setErrorMessage(t("invalidCode"));
       } else {
-        setErrorMessage(result.error || "Error logging in");
+        setErrorMessage(result.error || "Error validating code");
       }
+    }
+    
+    setIsSubmitting(false);
+  };
+
+  const handleSelectMember = async (member: Profile) => {
+    setIsSubmitting(true);
+    setErrorMessage("");
+    
+    const result = await loginAsExistingMember(code, member.id, member.name);
+    
+    if (!result.success) {
+      setErrorMessage(result.error || "Error logging in");
     }
     
     setIsSubmitting(false);
@@ -90,7 +114,11 @@ const Onboarding = () => {
 
   const selectMode = (selectedMode: "create" | "join" | "login") => {
     setMode(selectedMode);
-    setStep("name");
+    if (selectedMode === "login") {
+      setStep("code");
+    } else {
+      setStep("name");
+    }
     setErrorMessage("");
     setCode("");
   };
@@ -102,6 +130,15 @@ const Onboarding = () => {
     setCode("");
     setErrorMessage("");
     setGeneratedCode("");
+    setHouseholdMembers([]);
+    setValidatedHouseholdId(null);
+  };
+
+  const handleBackToCode = () => {
+    setStep("code");
+    setErrorMessage("");
+    setHouseholdMembers([]);
+    setValidatedHouseholdId(null);
   };
 
   return (
@@ -156,7 +193,7 @@ const Onboarding = () => {
         </div>
       )}
 
-      {/* STEP 2: Enter name and optionally code */}
+      {/* STEP: Create household - enter name */}
       {step === "name" && mode === "create" && !generatedCode && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
           <h2 className="text-xl font-bold text-foreground">{t("createHousehold")}</h2>
@@ -269,8 +306,8 @@ const Onboarding = () => {
         </div>
       )}
 
-      {/* Login again - enter code and name */}
-      {step === "name" && mode === "login" && (
+      {/* Login again - STEP 1: enter code first */}
+      {step === "code" && mode === "login" && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
           <h2 className="text-xl font-bold text-foreground">{t("welcomeBack")}</h2>
           <p className="text-muted-foreground text-sm">{t("enterSavedCode")}</p>
@@ -286,16 +323,8 @@ const Onboarding = () => {
             className="w-full text-center text-3xl tracking-[0.3em] font-bold rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             maxLength={6}
             inputMode="numeric"
+            autoFocus
             aria-label={t("enterCode")}
-          />
-          
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t("ownerNamePlaceholder")}
-            className="w-full rounded-lg border border-border bg-card px-4 py-3 text-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            aria-label={t("ownerNamePlaceholder")}
           />
           
           {errorMessage && (
@@ -305,16 +334,58 @@ const Onboarding = () => {
           )}
           
           <button
-            onClick={handleLoginWithCode}
-            disabled={code.length !== 6 || !name.trim() || isSubmitting}
+            onClick={handleValidateCode}
+            disabled={code.length !== 6 || isSubmitting}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
-            aria-label={t("login")}
+            aria-label={t("next")}
           >
-            {isSubmitting ? "..." : t("login")}
+            {isSubmitting ? "..." : t("next")}
           </button>
           
           <button 
             onClick={handleBackToChoose} 
+            className="text-sm text-muted-foreground underline"
+            aria-label={t("back")}
+          >
+            {t("back")}
+          </button>
+        </div>
+      )}
+
+      {/* Login again - STEP 2: select member from list */}
+      {step === "selectMember" && mode === "login" && (
+        <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
+          <h2 className="text-xl font-bold text-foreground">{t("selectMember")}</h2>
+          <p className="text-muted-foreground text-sm">{t("selectMemberDesc")}</p>
+          
+          <div className="space-y-2">
+            {householdMembers.map((member) => (
+              <button
+                key={member.id}
+                onClick={() => handleSelectMember(member)}
+                disabled={isSubmitting}
+                className="w-full flex items-center justify-between p-4 rounded-xl bg-card border border-border hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.98] disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label={`${t("continueAs")} ${member.name}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-5 h-5 text-primary" aria-hidden="true" />
+                  </div>
+                  <span className="font-semibold text-foreground">{member.name}</span>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+          
+          {errorMessage && (
+            <p className="text-destructive text-sm font-medium animate-shake" role="alert" aria-live="polite">
+              {errorMessage}
+            </p>
+          )}
+          
+          <button 
+            onClick={handleBackToCode} 
             className="text-sm text-muted-foreground underline"
             aria-label={t("back")}
           >
