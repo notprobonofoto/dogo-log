@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useApp, Profile } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import dogPaws from "@/assets/dog-paws.png";
+import logo from "@/assets/logo.png";
 import LanguageSelector from "./LanguageSelector";
 import { User, ChevronRight } from "lucide-react";
 
@@ -147,12 +147,12 @@ const Onboarding = () => {
       role="main"
       aria-label={t("welcomeTitle")}
     >
-      {/* Animated dog */}
+      {/* Logo */}
       <div className="animate-pop-in mb-8">
         <img 
-          src={dogPaws} 
+          src={logo} 
           alt="DogoLog - aplikacja dla właścicieli psów" 
-          className="w-32 h-32 mx-auto animate-dog-bounce" 
+          className="w-40 h-auto mx-auto" 
         />
       </div>
 
