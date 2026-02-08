@@ -1,11 +1,11 @@
 import { useMemo, useEffect, useState } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, X } from "lucide-react";
 import DogAvatar from "./DogAvatar";
 
 const ReminderBanner = () => {
-  const { dogs, healthEvents } = useData();
+  const { dogs, healthEvents } = useApp();
   const { t } = useLanguage();
   const [dismissed, setDismissed] = useState<string[]>([]);
   const [playSound, setPlaySound] = useState(false);

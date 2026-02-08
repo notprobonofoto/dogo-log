@@ -1,4 +1,4 @@
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 
 interface DogAvatarProps {
   dogId: string;
@@ -14,7 +14,7 @@ const sizeClasses = {
 };
 
 const DogAvatar = ({ dogId, size = "md", className = "" }: DogAvatarProps) => {
-  const { getDogAvatar, dogs } = useData();
+  const { getDogAvatar, dogs } = useApp();
   const avatar = getDogAvatar(dogId);
   const dog = dogs.find((d) => d.id === dogId);
   

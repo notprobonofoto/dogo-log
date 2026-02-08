@@ -4,25 +4,76 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import dogPaws from "@/assets/dog-paws.png";
 import LanguageSelector from "./LanguageSelector";
 
-const generateCode = () => String(Math.floor(100000 + Math.random() * 900000));
-
 const Onboarding = () => {
-  const { completeOnboarding } = useApp();
+  const { createHousehold, joinHousehold, loginWithCode } = useApp();
   const { t } = useLanguage();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [mode, setMode] = useState<"create" | "join" | "login" | null>(null);
   const [code, setCode] = useState("");
-  const [generatedCode] = useState(generateCode);
+  const [generatedCode, setGeneratedCode] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleCreateHousehold = async () => {
+    if (!name.trim()) return;
+    
+    setIsSubmitting(true);
+    setErrorMessage("");
+    
+    const result = await createHousehold(name.trim());
+    
+    if (result.success && result.code) {
+      setGeneratedCode(result.code);
+      setMode("create");
+    } else {
+      setErrorMessage(result.error || "Error creating household");
+    }
+    
+    setIsSubmitting(false);
+  };
+
+  const handleJoinHousehold = async () => {
+    if (!name.trim() || code.length !== 6) return;
+    
+    setIsSubmitting(true);
+    setErrorMessage("");
+    
+    const result = await joinHousehold(code, name.trim());
+    
+    if (!result.success) {
+      if (result.error === "invalidCode") {
+        setErrorMessage(t("invalidCode"));
+      } else {
+        setErrorMessage(result.error || "Error joining household");
+      }
+    }
+    // If success, the context will update isOnboarded and redirect automatically
+    
+    setIsSubmitting(false);
+  };
+
+  const handleLoginWithCode = async () => {
+    if (!name.trim() || code.length !== 6) return;
+    
+    setIsSubmitting(true);
+    setErrorMessage("");
+    
+    const result = await loginWithCode(code, name.trim());
+    
+    if (!result.success) {
+      if (result.error === "invalidCode") {
+        setErrorMessage(t("invalidCode"));
+      } else {
+        setErrorMessage(result.error || "Error logging in");
+      }
+    }
+    
+    setIsSubmitting(false);
+  };
 
   const handleNext = () => {
     if (step === 0 && name.trim()) setStep(1);
-    if (step === 1 && mode === "create") {
-      completeOnboarding(name.trim(), generatedCode);
-    }
-    if (step === 1 && (mode === "join" || mode === "login") && code.length === 6) {
-      completeOnboarding(name.trim(), code);
-    }
   };
 
   return (
@@ -68,39 +119,43 @@ const Onboarding = () => {
           <h2 className="text-xl font-bold text-foreground">{t("hello")}, {name}! 👋</h2>
           <p className="text-muted-foreground text-sm">{t("whatToDo")}</p>
           <button
-            onClick={() => setMode("create")}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
+            onClick={handleCreateHousehold}
+            disabled={isSubmitting}
+            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready disabled:opacity-40"
           >
-            {t("createHousehold")}
+            {isSubmitting ? "..." : t("createHousehold")}
           </button>
           <button
             onClick={() => setMode("join")}
+            disabled={isSubmitting}
             className="w-full py-3 rounded-lg bg-secondary text-secondary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-100"
           >
             {t("joinHousehold")}
           </button>
           <button
             onClick={() => setMode("login")}
+            disabled={isSubmitting}
             className="w-full py-3 rounded-lg bg-accent text-accent-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready delay-200"
           >
             {t("loginAgain")}
           </button>
+          
+          {errorMessage && (
+            <p className="text-destructive text-sm font-medium">{errorMessage}</p>
+          )}
         </div>
       )}
 
-      {step === 1 && mode === "create" && (
+      {step === 1 && mode === "create" && generatedCode && (
         <div className="w-full max-w-sm animate-fade-in-up text-center space-y-4">
           <h2 className="text-xl font-bold text-foreground">{t("yourHouseholdCode")}</h2>
           <p className="text-muted-foreground text-sm">{t("shareCode")}</p>
           <div className="text-4xl font-black tracking-[0.3em] text-primary animate-pop-in bg-card rounded-xl py-4">
             {generatedCode}
           </div>
-          <button
-            onClick={handleNext}
-            className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
-          >
-            {t("letsStart")}
-          </button>
+          <p className="text-muted-foreground text-xs">
+            ✅ {t("letsStart")}
+          </p>
         </div>
       )}
 
@@ -111,20 +166,31 @@ const Onboarding = () => {
           <input
             type="text"
             value={code}
-            onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            onChange={(e) => {
+              setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+              setErrorMessage("");
+            }}
             placeholder="000000"
             className="w-full text-center text-3xl tracking-[0.3em] font-bold rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             maxLength={6}
             inputMode="numeric"
           />
+          
+          {errorMessage && (
+            <p className="text-destructive text-sm font-medium animate-shake">{errorMessage}</p>
+          )}
+          
           <button
-            onClick={handleNext}
-            disabled={code.length !== 6}
+            onClick={handleJoinHousehold}
+            disabled={code.length !== 6 || isSubmitting}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            {t("join")}
+            {isSubmitting ? "..." : t("join")}
           </button>
-          <button onClick={() => setMode(null)} className="text-sm text-muted-foreground underline">
+          <button 
+            onClick={() => { setMode(null); setErrorMessage(""); setCode(""); }} 
+            className="text-sm text-muted-foreground underline"
+          >
             {t("back")}
           </button>
         </div>
@@ -137,20 +203,31 @@ const Onboarding = () => {
           <input
             type="text"
             value={code}
-            onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            onChange={(e) => {
+              setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+              setErrorMessage("");
+            }}
             placeholder="000000"
             className="w-full text-center text-3xl tracking-[0.3em] font-bold rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             maxLength={6}
             inputMode="numeric"
           />
+          
+          {errorMessage && (
+            <p className="text-destructive text-sm font-medium animate-shake">{errorMessage}</p>
+          )}
+          
           <button
-            onClick={handleNext}
-            disabled={code.length !== 6}
+            onClick={handleLoginWithCode}
+            disabled={code.length !== 6 || isSubmitting}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-lg disabled:opacity-40 transition-all active:scale-95 hover:scale-[1.02] animate-button-ready"
           >
-            {t("login")}
+            {isSubmitting ? "..." : t("login")}
           </button>
-          <button onClick={() => setMode(null)} className="text-sm text-muted-foreground underline">
+          <button 
+            onClick={() => { setMode(null); setErrorMessage(""); setCode(""); }} 
+            className="text-sm text-muted-foreground underline"
+          >
             {t("back")}
           </button>
         </div>

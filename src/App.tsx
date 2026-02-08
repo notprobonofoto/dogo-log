@@ -2,18 +2,18 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { AppProvider, useApp } from "@/contexts/AppContext";
 import Dashboard from "./pages/Dashboard";
-import Auth from "./pages/Auth";
+import Onboarding from "./components/Onboarding";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, profile, loading } = useAuth();
+const AppContent = () => {
+  const { isOnboarded, loading } = useApp();
 
   if (loading) {
     return (
@@ -23,25 +23,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user || !profile) {
-    return <Auth />;
+  if (!isOnboarded) {
+    return <Onboarding />;
   }
 
-  return <>{children}</>;
-};
-
-const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/auth" element={<Auth />} />
+      <Route path="/" element={<Dashboard />} />
       <Route path="/install" element={<Install />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -53,11 +41,11 @@ const App = () => (
     <TooltipProvider>
       <LanguageProvider>
         <BrowserRouter>
-          <AuthProvider>
+          <AppProvider>
             <Toaster />
             <Sonner />
-            <AppRoutes />
-          </AuthProvider>
+            <AppContent />
+          </AppProvider>
         </BrowserRouter>
       </LanguageProvider>
     </TooltipProvider>

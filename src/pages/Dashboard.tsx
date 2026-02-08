@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { DataProvider } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import PawBackground from "@/components/PawBackground";
 import BottomNav from "@/components/BottomNav";
 import NewHomeTab from "@/components/tabs/NewHomeTab";
@@ -10,11 +8,8 @@ import NewFoodTab from "@/components/tabs/NewFoodTab";
 import NewHealthTab from "@/components/tabs/NewHealthTab";
 import NewDogsTab from "@/components/tabs/NewDogsTab";
 
-type Tab = "home" | "calendar" | "walks" | "food" | "health" | "dogs";
-
 const Dashboard = () => {
-  const { profile, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const { activeTab, setActiveTab, loading } = useApp();
 
   if (loading) {
     return (
@@ -25,20 +20,18 @@ const Dashboard = () => {
   }
 
   return (
-    <DataProvider>
-      <div className="relative min-h-screen overflow-hidden bg-background">
-        <PawBackground />
-        <div className="relative z-10">
-          {activeTab === "home" && <NewHomeTab setActiveTab={setActiveTab} />}
-          {activeTab === "calendar" && <NewCalendarTab />}
-          {activeTab === "walks" && <NewWalksTab />}
-          {activeTab === "food" && <NewFoodTab />}
-          {activeTab === "health" && <NewHealthTab />}
-          {activeTab === "dogs" && <NewDogsTab />}
-        </div>
-        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <PawBackground />
+      <div className="relative z-10">
+        {activeTab === "home" && <NewHomeTab setActiveTab={setActiveTab} />}
+        {activeTab === "calendar" && <NewCalendarTab />}
+        {activeTab === "walks" && <NewWalksTab />}
+        {activeTab === "food" && <NewFoodTab />}
+        {activeTab === "health" && <NewHealthTab />}
+        {activeTab === "dogs" && <NewDogsTab />}
       </div>
-    </DataProvider>
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+    </div>
   );
 };
 

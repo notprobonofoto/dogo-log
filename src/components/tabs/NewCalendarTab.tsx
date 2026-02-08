@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Calendar } from "@/components/ui/calendar";
-import { PawPrint, Utensils, Heart, X, ChevronLeft } from "lucide-react";
+import { PawPrint, Utensils, Heart, X } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 
 const NewCalendarTab = () => {
-  const { dogs, walks, meals, healthEvents } = useData();
+  const { dogs, walks, meals, healthEvents } = useApp();
   const { t } = useLanguage();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
@@ -70,25 +70,6 @@ const NewCalendarTab = () => {
     mixed: t("mixedFood"),
     treat: t("treat"),
     other: t("other"),
-  };
-
-  // Custom day render with event indicators
-  const renderDay = (day: Date) => {
-    const dateStr = day.toISOString().split("T")[0];
-    const dayEvents = eventDates[dateStr];
-
-    return (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <span>{day.getDate()}</span>
-        {dayEvents && (
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-0.5">
-            {dayEvents.walks > 0 && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-            {dayEvents.meals > 0 && <div className="w-1.5 h-1.5 rounded-full bg-accent" />}
-            {dayEvents.health > 0 && <div className="w-1.5 h-1.5 rounded-full bg-destructive" />}
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (

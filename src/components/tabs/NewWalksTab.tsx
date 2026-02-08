@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp, type WalkBusiness } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PawPrint, Plus, Trash2, Droplet, Circle } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import type { WalkBusiness } from "@/contexts/DataContext";
 
 const today = () => new Date().toISOString().split("T")[0];
 const now = () => new Date().toTimeString().slice(0, 5);
 
 const NewWalksTab = () => {
-  const { dogs, walks, addWalk, removeWalk } = useData();
+  const { dogs, walks, addWalk, removeWalk } = useApp();
   const { t } = useLanguage();
 
   const [showForm, setShowForm] = useState(false);

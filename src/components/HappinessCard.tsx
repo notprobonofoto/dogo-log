@@ -1,11 +1,11 @@
 import { useHappiness } from "@/hooks/useHappiness";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DogAvatar from "./DogAvatar";
 
 const HappinessCard = () => {
   const happiness = useHappiness();
-  const { dogs } = useData();
+  const { dogs } = useApp();
   const { t } = useLanguage();
 
   if (dogs.length === 0) return null;

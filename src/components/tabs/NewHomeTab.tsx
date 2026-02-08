@@ -1,5 +1,4 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo.png";
 import { PawPrint, Utensils, Heart, Dog, Settings, Copy, LogOut, Download, Users, Bell } from "lucide-react";
@@ -23,8 +22,7 @@ interface NewHomeTabProps {
 const today = () => new Date().toISOString().split("T")[0];
 
 const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
-  const { profile, householdCode, householdMembers, signOut } = useAuth();
-  const { dogs, walks, meals } = useData();
+  const { userName, householdCode, householdMembers, profileId, dogs, walks, meals, logout } = useApp();
   const { t } = useLanguage();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -45,7 +43,7 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
   };
 
   const handleLogout = async () => {
-    await signOut();
+    logout();
     setShowLogout(false);
   };
 
@@ -87,12 +85,12 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
                 <span
                   key={member.id}
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    member.id === profile?.id
+                    member.id === profileId
                       ? "bg-primary/20 text-primary"
                       : "bg-secondary text-secondary-foreground"
                   }`}
                 >
-                  {member.name} {member.id === profile?.id && "(Ty)"}
+                  {member.name} {member.id === profileId && "(Ty)"}
                 </span>
               ))}
             </div>
@@ -123,7 +121,7 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
         <img src={logo} alt="DogoLog" className="w-36 h-auto" />
       </div>
 
-      <WelcomeGreeting name={profile?.name || ""} />
+      <WelcomeGreeting name={userName} />
 
       {dogs.length > 0 && (
         <div className="flex justify-center gap-4 mb-4 animate-fade-in-up">

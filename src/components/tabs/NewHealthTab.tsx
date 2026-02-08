@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp, type HealthEvent } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Plus, Trash2, Stethoscope, Scissors, Syringe, Calendar, Scale, MoreHorizontal } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import type { HealthEvent } from "@/contexts/DataContext";
 
 const today = () => new Date().toISOString().split("T")[0];
 
 type HealthType = HealthEvent["type"];
 
 const NewHealthTab = () => {
-  const { dogs, healthEvents, addHealthEvent, removeHealthEvent } = useData();
+  const { dogs, healthEvents, addHealthEvent, removeHealthEvent } = useApp();
   const { t } = useLanguage();
 
   const [showForm, setShowForm] = useState(false);
@@ -67,9 +66,6 @@ const NewHealthTab = () => {
   };
 
   const sortedEvents = [...healthEvents].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-  // Events that need date picker (heat cycle)
-  const needsDatePicker = eventType === "cieczka_start" || eventType === "cieczka_koniec";
 
   return (
     <div className="min-h-screen pb-24 px-4 pt-6">
