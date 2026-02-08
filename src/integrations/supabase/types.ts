@@ -382,23 +382,32 @@ export type Database = {
       push_subscriptions: {
         Row: {
           created_at: string | null
+          device_id: string | null
+          enabled: boolean | null
           endpoint: string
           id: string
           keys: Json
+          last_seen_at: string | null
           profile_id: string
         }
         Insert: {
           created_at?: string | null
+          device_id?: string | null
+          enabled?: boolean | null
           endpoint: string
           id?: string
           keys: Json
+          last_seen_at?: string | null
           profile_id: string
         }
         Update: {
           created_at?: string | null
+          device_id?: string | null
+          enabled?: boolean | null
           endpoint?: string
           id?: string
           keys?: Json
+          last_seen_at?: string | null
           profile_id?: string
         }
         Relationships: [

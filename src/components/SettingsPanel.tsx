@@ -1,6 +1,7 @@
 import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Settings, Copy, Check, LogOut, Globe, ArrowLeft, Users } from "lucide-react";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { Settings, Copy, Check, LogOut, Globe, ArrowLeft, Users, Bell, BellOff, BellRing, AlertCircle, Send } from "lucide-react";
 import { useState } from "react";
 import LogoutDialog from "@/components/LogoutDialog";
 import HouseholdMembersPanel from "@/components/HouseholdMembersPanel";
@@ -15,6 +16,16 @@ const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
   const [copied, setCopied] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [testSending, setTestSending] = useState(false);
+
+  const { 
+    status: pushStatus, 
+    isRegistering, 
+    registerPush, 
+    unsubscribePush, 
+    sendTestPush,
+    isSupported: pushSupported 
+  } = usePushNotifications();
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(householdCode);
@@ -25,6 +36,31 @@ const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
   const handleLogout = () => {
     logout();
     setShowLogout(false);
+  };
+
+  const handleTestPush = async () => {
+    setTestSending(true);
+    await sendTestPush();
+    setTestSending(false);
+  };
+
+  const getPushStatusText = () => {
+    switch (pushStatus) {
+      case 'enabled': return language === 'pl' ? 'Włączone' : 'Enabled';
+      case 'disabled': return language === 'pl' ? 'Wyłączone' : 'Disabled';
+      case 'denied': return language === 'pl' ? 'Zablokowane' : 'Blocked';
+      case 'unsupported': return language === 'pl' ? 'Nieobsługiwane' : 'Unsupported';
+      default: return language === 'pl' ? 'Ładowanie...' : 'Loading...';
+    }
+  };
+
+  const getPushStatusIcon = () => {
+    switch (pushStatus) {
+      case 'enabled': return <BellRing className="w-5 h-5 text-primary" />;
+      case 'denied': return <AlertCircle className="w-5 h-5 text-destructive" />;
+      case 'unsupported': return <BellOff className="w-5 h-5 text-muted-foreground" />;
+      default: return <Bell className="w-5 h-5 text-muted-foreground" />;
+    }
   };
 
   if (showMembers) {
@@ -58,6 +94,69 @@ const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
       </div>
 
       <div className="space-y-4">
+        {/* Push Notifications */}
+        {pushSupported && (
+          <div className="bg-card rounded-xl p-4">
+            <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+              {getPushStatusIcon()}
+              {t("notifications")}
+            </h3>
+            
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm text-muted-foreground">Status:</span>
+              <span className={`text-sm font-semibold ${
+                pushStatus === 'enabled' ? 'text-primary' : 
+                pushStatus === 'denied' ? 'text-destructive' : 'text-muted-foreground'
+              }`}>
+                {getPushStatusText()}
+              </span>
+            </div>
+
+            {pushStatus === 'denied' && (
+              <p className="text-xs text-muted-foreground mb-3 bg-destructive/10 rounded-lg p-2">
+                {language === 'pl' 
+                  ? 'Powiadomienia są zablokowane w przeglądarce. Aby je włączyć, przejdź do ustawień przeglądarki i odblokuj powiadomienia dla tej strony.'
+                  : 'Notifications are blocked in browser. To enable them, go to browser settings and unblock notifications for this site.'}
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              {pushStatus === 'disabled' && (
+                <button
+                  onClick={registerPush}
+                  disabled={isRegistering}
+                  className="flex-1 py-2 px-4 rounded-lg bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <Bell className="w-4 h-4" />
+                  {isRegistering 
+                    ? (language === 'pl' ? 'Włączanie...' : 'Enabling...') 
+                    : (language === 'pl' ? 'Włącz powiadomienia' : 'Enable notifications')}
+                </button>
+              )}
+
+              {pushStatus === 'enabled' && (
+                <>
+                  <button
+                    onClick={unsubscribePush}
+                    className="flex-1 py-2 px-4 rounded-lg bg-secondary text-secondary-foreground font-semibold text-sm flex items-center justify-center gap-2"
+                  >
+                    <BellOff className="w-4 h-4" />
+                    {language === 'pl' ? 'Wyłącz' : 'Disable'}
+                  </button>
+                  <button
+                    onClick={handleTestPush}
+                    disabled={testSending}
+                    className="py-2 px-4 rounded-lg bg-accent text-accent-foreground font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Send className="w-4 h-4" />
+                    {testSending ? '...' : 'Test'}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Household Code */}
         <div className="bg-card rounded-xl p-4">
           <h3 className="font-semibold text-foreground mb-3">{t("householdCode")}</h3>

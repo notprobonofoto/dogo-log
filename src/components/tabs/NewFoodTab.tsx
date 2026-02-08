@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp, type MealType } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Utensils, Plus, Trash2 } from "lucide-react";
+import { Utensils, Plus, Trash2, UtensilsCrossed, Soup, Cookie, MoreHorizontal, Bone } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -54,12 +54,16 @@ const NewFoodTab = () => {
     return dogIds.map(id => getDogName(id)).join(", ");
   };
 
-  const mealIcons: Record<MealType, string> = {
-    dry: "🥣",
-    wet: "🥫",
-    mixed: "🍽️",
-    treat: "🦴",
-    other: "🍖",
+  // Check if we need single column layout (long names or many dogs)
+  const hasLongNames = dogs.some(d => d.name.length > 8);
+  const useSingleColumn = hasLongNames || dogs.length > 4;
+
+  const mealIcons: Record<MealType, React.ReactNode> = {
+    dry: <UtensilsCrossed className="w-5 h-5" aria-hidden="true" />,
+    wet: <Soup className="w-5 h-5" aria-hidden="true" />,
+    mixed: <Utensils className="w-5 h-5" aria-hidden="true" />,
+    treat: <Bone className="w-5 h-5" aria-hidden="true" />,
+    other: <MoreHorizontal className="w-5 h-5" aria-hidden="true" />,
   };
 
   const mealLabels: Record<MealType, string> = {
@@ -89,29 +93,29 @@ const NewFoodTab = () => {
 
       {showForm && (
         <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4" role="form" aria-label={t("addMeal")}>
-          {/* Dog selection - checkboxes for multiple dogs */}
-          <fieldset>
-            <legend className="sr-only">{t("whoEats")}</legend>
-            <div className="grid grid-cols-2 gap-3" role="group" aria-label={t("whoEats")}>
-              {dogs.map((dog) => (
-                <button
-                  key={dog.id}
-                  onClick={() => toggleDog(dog.id)}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
-                    selectedDogs.includes(dog.id) 
-                      ? "border-2 border-accent bg-transparent" 
-                      : "bg-secondary border-2 border-transparent"
-                  }`}
-                  role="checkbox"
-                  aria-checked={selectedDogs.includes(dog.id)}
-                  aria-label={dog.name}
-                >
-                  <DogAvatar dogId={dog.id} size="lg" />
-                  <span className="font-semibold text-foreground">{dog.name}</span>
-                </button>
-              ))}
-            </div>
-          </fieldset>
+        {/* Dog selection - dynamic layout */}
+        <fieldset>
+          <legend className="sr-only">{t("whoEats")}</legend>
+          <div className={`grid gap-3 ${useSingleColumn ? 'grid-cols-1' : 'grid-cols-2'}`} role="group" aria-label={t("whoEats")}>
+            {dogs.map((dog) => (
+              <button
+                key={dog.id}
+                onClick={() => toggleDog(dog.id)}
+                className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                  selectedDogs.includes(dog.id) 
+                    ? "border-2 border-accent bg-transparent" 
+                    : "bg-secondary border-2 border-transparent"
+                }`}
+                role="checkbox"
+                aria-checked={selectedDogs.includes(dog.id)}
+                aria-label={dog.name}
+              >
+                <DogAvatar dogId={dog.id} size="lg" className="flex-shrink-0" />
+                <span className="font-semibold text-foreground text-left">{dog.name}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
           {/* Date & Time */}
           <div className="flex gap-2">
@@ -156,7 +160,7 @@ const NewFoodTab = () => {
                   aria-checked={mealType === type}
                   aria-label={mealLabels[type]}
                 >
-                  <span className="text-xl" aria-hidden="true">{mealIcons[type]}</span>
+                  <span className={mealType === type ? "text-accent" : "text-muted-foreground"}>{mealIcons[type]}</span>
                   <span>{mealLabels[type]}</span>
                 </button>
               ))}
@@ -209,8 +213,8 @@ const NewFoodTab = () => {
 
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-foreground truncate">{getDogNames(meal.dog_ids)}</p>
-              <p className="text-sm text-muted-foreground">
-                {meal.time} • <span aria-hidden="true">{mealIcons[meal.type]}</span> {mealLabels[meal.type]}
+              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                {meal.time} • <span className="text-muted-foreground">{mealIcons[meal.type]}</span> {mealLabels[meal.type]}
                 {meal.profile_name && ` • ${meal.profile_name}`}
               </p>
               {meal.note && (

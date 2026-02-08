@@ -1,6 +1,5 @@
 import { Bell, Settings } from "lucide-react";
 import HamburgerMenu, { type MenuTab } from "./HamburgerMenu";
-import logo from "@/assets/dogolog-logo.png";
 
 interface TopBarProps {
   activeTab: MenuTab;
@@ -43,10 +42,8 @@ const TopBar = ({
           </button>
         </div>
 
-        {/* Center: Logo */}
-        <div className="flex items-center">
-          <img src={logo} alt="DogoLog" className="h-8" />
-        </div>
+        {/* Center: Spacer for balance */}
+        <div className="flex-1" />
 
         {/* Right side: Hamburger Menu */}
         <HamburgerMenu activeTab={activeTab} onNavigate={onNavigate} />

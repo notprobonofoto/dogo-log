@@ -97,28 +97,34 @@ const NewHealthTab = () => {
 
       {showForm && (
         <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4" role="form" aria-label={t("newEvent")}>
-          {/* Dog selection - 2 per row */}
+          {/* Dog selection - dynamic layout */}
           <fieldset>
             <legend className="sr-only">{t("dog")}</legend>
-            <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("dog")}>
-              {dogs.map((dog) => (
-                <button
-                  key={dog.id}
-                  onClick={() => setSelectedDog(dog.id)}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
-                    selectedDog === dog.id 
-                      ? "border-2 border-destructive bg-transparent" 
-                      : "bg-secondary border-2 border-transparent"
-                  }`}
-                  role="radio"
-                  aria-checked={selectedDog === dog.id}
-                  aria-label={dog.name}
-                >
-                  <DogAvatar dogId={dog.id} size="lg" />
-                  <span className="font-semibold text-foreground">{dog.name}</span>
-                </button>
-              ))}
-            </div>
+            {(() => {
+              const hasLongNames = dogs.some(d => d.name.length > 8);
+              const useSingleColumn = hasLongNames || dogs.length > 4;
+              return (
+                <div className={`grid gap-3 ${useSingleColumn ? 'grid-cols-1' : 'grid-cols-2'}`} role="radiogroup" aria-label={t("dog")}>
+                  {dogs.map((dog) => (
+                    <button
+                      key={dog.id}
+                      onClick={() => setSelectedDog(dog.id)}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                        selectedDog === dog.id 
+                          ? "border-2 border-destructive bg-transparent" 
+                          : "bg-secondary border-2 border-transparent"
+                      }`}
+                      role="radio"
+                      aria-checked={selectedDog === dog.id}
+                      aria-label={dog.name}
+                    >
+                      <DogAvatar dogId={dog.id} size="lg" className="flex-shrink-0" />
+                      <span className="font-semibold text-foreground text-left">{dog.name}</span>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
           </fieldset>
 
           {/* Event type - FIXED ORDER - 2 per row */}
