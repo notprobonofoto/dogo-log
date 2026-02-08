@@ -154,28 +154,34 @@ const NewWalksTab = () => {
             </button>
           </div>
 
-          {/* Dog selection - 2 per row */}
+          {/* Dog selection - dynamic layout */}
           <fieldset>
             <legend className="sr-only">{t("whoWent")}</legend>
-            <div className="grid grid-cols-2 gap-3" role="group" aria-label={t("whoWent")}>
-              {dogs.map((dog) => (
-                <button
-                  key={dog.id}
-                  onClick={() => toggleDog(dog.id)}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
-                    selectedDogs.includes(dog.id)
-                      ? "border-2 border-primary bg-transparent"
-                      : "bg-secondary border-2 border-transparent"
-                  }`}
-                  role="checkbox"
-                  aria-checked={selectedDogs.includes(dog.id)}
-                  aria-label={dog.name}
-                >
-                  <DogAvatar dogId={dog.id} size="lg" />
-                  <span className="font-semibold text-foreground">{dog.name}</span>
-                </button>
-              ))}
-            </div>
+            {(() => {
+              const hasLongNames = dogs.some(d => d.name.length > 8);
+              const useSingleColumn = hasLongNames || dogs.length > 4;
+              return (
+                <div className={`grid gap-3 ${useSingleColumn ? 'grid-cols-1' : 'grid-cols-2'}`} role="group" aria-label={t("whoWent")}>
+                  {dogs.map((dog) => (
+                    <button
+                      key={dog.id}
+                      onClick={() => toggleDog(dog.id)}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
+                        selectedDogs.includes(dog.id)
+                          ? "border-2 border-primary bg-transparent"
+                          : "bg-secondary border-2 border-transparent"
+                      }`}
+                      role="checkbox"
+                      aria-checked={selectedDogs.includes(dog.id)}
+                      aria-label={dog.name}
+                    >
+                      <DogAvatar dogId={dog.id} size="lg" className="flex-shrink-0" />
+                      <span className="font-semibold text-foreground text-left">{dog.name}</span>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
           </fieldset>
 
           {/* Date & Time */}

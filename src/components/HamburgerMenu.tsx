@@ -49,9 +49,9 @@ const HamburgerMenu = ({ activeTab, onNavigate }: HamburgerMenuProps) => {
         />
       )}
 
-      {/* Slide-in menu */}
+      {/* Slide-in menu - full opaque background */}
       <div 
-        className={`fixed top-0 right-0 h-full w-72 bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-full w-72 bg-background z-50 shadow-2xl transform transition-transform duration-300 ease-out border-l border-border ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
