@@ -416,10 +416,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     
     try {
       // Ensure anonymous session
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        await supabase.auth.signInAnonymously();
+        const { data } = await supabase.auth.signInAnonymously();
+        session = data.session;
       }
+      
+      if (!session) {
+        return { success: false, error: "Could not create session" };
+      }
+      
+      const userId = session.user.id;
       
       // Generate unique code
       const { data: code, error: codeError } = await supabase.rpc("generate_unique_household_code");
@@ -438,23 +445,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return { success: false, error: "Could not create household" };
       }
       
-      // Create profile
+      // Create profile WITH user_id (important for RLS!)
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .insert({
           name,
           household_id: household.id,
-          user_id: null, // Anonymous user
+          user_id: userId, // Use the actual user ID, even for anonymous users
         })
         .select()
         .single();
       
       if (profileError || !profile) {
+        console.error("Error creating profile:", profileError);
         return { success: false, error: "Could not create profile" };
       }
-      
-      // Set session household for RLS policies
-      await setSessionHousehold(household.id);
       
       // Save to state and localStorage
       setUserName(name);
@@ -481,10 +486,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     
     try {
       // Ensure anonymous session
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        await supabase.auth.signInAnonymously();
+        const { data } = await supabase.auth.signInAnonymously();
+        session = data.session;
       }
+      
+      if (!session) {
+        return { success: false, error: "Could not create session" };
+      }
+      
+      const userId = session.user.id;
       
       // Validate code exists
       const { data: exists } = await supabase.rpc("household_code_exists", { code_to_check: code });
@@ -499,13 +511,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return { success: false, error: "Could not find household" };
       }
       
-      // Create profile for this user in the household
+      // Create profile for this user in the household WITH user_id
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .insert({
           name,
           household_id: houseId,
-          user_id: null,
+          user_id: userId, // Use the actual user ID, even for anonymous users
         })
         .select()
         .single();
@@ -514,9 +526,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         console.error("Error creating profile:", profileError);
         return { success: false, error: "Could not create profile" };
       }
-      
-      // Set session household for RLS policies
-      await setSessionHousehold(houseId);
       
       // Save to state and localStorage
       setUserName(name);
