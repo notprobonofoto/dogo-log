@@ -1,81 +1,55 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Plane, Search, AlertTriangle, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import ReactMarkdown from "react-markdown";
-
-const COUNTRIES = [
-  "Niemcy", "Francja", "Włochy", "Hiszpania", "Portugalia", "Holandia", "Belgia", "Austria",
-  "Szwajcaria", "Czechy", "Słowacja", "Węgry", "Chorwacja", "Słowenia", "Grecja", "Turcja",
-  "Wielka Brytania", "Irlandia", "Szwecja", "Norwegia", "Dania", "Finlandia", "Estonia",
-  "Łotwa", "Litwa", "Rumunia", "Bułgaria", "Serbia", "Czarnogóra", "Albania", "Macedonia Północna",
-  "Ukraina", "Mołdawia", "Rosja", "Białoruś",
-  "Stany Zjednoczone", "Kanada", "Meksyk", "Brazylia", "Argentyna", "Chile", "Kolumbia", "Peru",
-  "Australia", "Nowa Zelandia", "Japonia", "Korea Południowa", "Chiny", "Tajlandia", "Wietnam",
-  "Indonezja", "Malezja", "Singapur", "Filipiny", "Indie", "Zjednoczone Emiraty Arabskie",
-  "Egipt", "Maroko", "Tunezja", "RPA", "Kenia", "Tanzania"
-];
+import { Plane, Search, AlertTriangle, FileText, Syringe, ClipboardList, Ban, Lightbulb, DoorOpen, ArrowLeft } from "lucide-react";
+import { getCountriesSorted, getTravelInfo, type TravelInfo } from "@/data/travelData";
 
 const NewTravelTab = () => {
   const { t, language } = useLanguage();
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [travelInfo, setTravelInfo] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [travelInfo, setTravelInfo] = useState<TravelInfo | null>(null);
 
-  const filteredCountries = COUNTRIES.filter(country =>
-    country.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Get countries sorted alphabetically in current language
+  const sortedCountries = useMemo(() => getCountriesSorted(language), [language]);
 
-  const fetchTravelInfo = async (country: string) => {
-    setLoading(true);
-    setError(null);
-    setTravelInfo(null);
-
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke("travel-info", {
-        body: { country, language },
-      });
-
-      if (fnError) throw fnError;
-      if (data.error) throw new Error(data.error);
-
-      setTravelInfo(data.info);
-    } catch (err) {
-      console.error("Error fetching travel info:", err);
-      setError(err instanceof Error ? err.message : "Wystąpił błąd");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const filteredCountries = useMemo(() => 
+    sortedCountries.filter(country =>
+      country.toLowerCase().includes(searchQuery.toLowerCase())
+    ), [sortedCountries, searchQuery]);
 
   const handleSelectCountry = (country: string) => {
     setSelectedCountry(country);
     setSearchQuery("");
-    fetchTravelInfo(country);
+    const info = getTravelInfo(country);
+    setTravelInfo(info);
   };
 
   const handleBack = () => {
     setSelectedCountry("");
     setTravelInfo(null);
-    setError(null);
   };
 
+  const sections = travelInfo ? [
+    { icon: FileText, label: language === "pl" ? "Dokumenty" : "Documents", content: travelInfo.documents },
+    { icon: Syringe, label: language === "pl" ? "Szczepienia" : "Vaccinations", content: travelInfo.vaccinations },
+    { icon: ClipboardList, label: language === "pl" ? "Wymagania" : "Requirements", content: travelInfo.requirements },
+    { icon: Ban, label: language === "pl" ? "Ograniczenia" : "Restrictions", content: travelInfo.restrictions },
+    { icon: Lightbulb, label: language === "pl" ? "Zalecenia" : "Recommendations", content: travelInfo.recommendations },
+    { icon: DoorOpen, label: language === "pl" ? "Procedura wjazdu" : "Entry Procedure", content: travelInfo.entryProcedure },
+  ] : [];
+
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label="Podróże">
+    <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label={t("travel")}>
       <div className="flex items-center gap-3 mb-6">
         <Plane className="w-8 h-8 text-primary" />
-        <h1 className="text-2xl font-bold text-foreground">{language === "pl" ? "Podróże" : "Travel"}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("travel")}</h1>
       </div>
 
       {/* AI Disclaimer */}
       <div className="bg-warn/10 border border-warn/30 rounded-xl p-4 mb-6 flex items-start gap-3">
         <AlertTriangle className="w-5 h-5 text-warn flex-shrink-0 mt-0.5" />
         <p className="text-sm text-muted-foreground">
-          {language === "pl"
-            ? "Informacje są generowane przez AI i mogą być nieaktualne. Zawsze sprawdź oficjalne źródła przed podróżą."
-            : "Information is AI-generated and may be outdated. Always verify with official sources before traveling."}
+          {t("aiDisclaimer")}
         </p>
       </div>
 
@@ -93,8 +67,15 @@ const NewTravelTab = () => {
             />
           </div>
 
+          {/* Country count */}
+          <p className="text-sm text-muted-foreground mb-3">
+            {language === "pl" 
+              ? `${filteredCountries.length} krajów` 
+              : `${filteredCountries.length} countries`}
+          </p>
+
           {/* Country list */}
-          <div className="space-y-2" role="list" aria-label={language === "pl" ? "Lista krajów" : "Country list"}>
+          <div className="space-y-2 max-h-[60vh] overflow-y-auto" role="list" aria-label={language === "pl" ? "Lista krajów" : "Country list"}>
             {filteredCountries.map((country) => (
               <button
                 key={country}
@@ -119,9 +100,10 @@ const NewTravelTab = () => {
           {/* Back button and country name */}
           <button
             onClick={handleBack}
-            className="mb-4 text-primary font-semibold flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary rounded"
+            className="mb-4 text-primary font-semibold flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary rounded p-2 -ml-2"
           >
-            ← {t("back")}
+            <ArrowLeft className="w-5 h-5" />
+            {t("back")}
           </button>
 
           <div className="bg-card rounded-xl p-4 mb-4">
@@ -131,45 +113,20 @@ const NewTravelTab = () => {
             </h2>
           </div>
 
-          {/* Loading state */}
-          {loading && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
-              <p className="text-muted-foreground">
-                {language === "pl" ? "Pobieranie informacji..." : "Loading information..."}
-              </p>
-            </div>
-          )}
-
-          {/* Error state */}
-          {error && (
-            <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4">
-              <p className="text-destructive font-medium">{error}</p>
-              <button
-                onClick={() => fetchTravelInfo(selectedCountry)}
-                className="mt-3 text-sm text-primary underline"
-              >
-                {language === "pl" ? "Spróbuj ponownie" : "Try again"}
-              </button>
-            </div>
-          )}
-
-          {/* Travel info */}
+          {/* Travel info sections */}
           {travelInfo && (
-            <div className="bg-card rounded-xl p-4 prose prose-sm max-w-none dark:prose-invert">
-              <ReactMarkdown
-                components={{
-                  h1: ({ children }) => <h1 className="text-lg font-bold text-foreground mb-2">{children}</h1>,
-                  h2: ({ children }) => <h2 className="text-base font-bold text-foreground mt-4 mb-2">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-sm font-bold text-foreground mt-3 mb-1">{children}</h3>,
-                  p: ({ children }) => <p className="text-sm text-muted-foreground mb-2">{children}</p>,
-                  ul: ({ children }) => <ul className="list-disc list-inside text-sm text-muted-foreground mb-2">{children}</ul>,
-                  li: ({ children }) => <li className="mb-1">{children}</li>,
-                  strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
-                }}
-              >
-                {travelInfo}
-              </ReactMarkdown>
+            <div className="space-y-3">
+              {sections.map((section, idx) => (
+                <div key={idx} className="bg-card rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <section.icon className="w-5 h-5 text-primary" />
+                    <h3 className="font-bold text-foreground">{section.label}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {section.content}
+                  </p>
+                </div>
+              ))}
             </div>
           )}
         </>
