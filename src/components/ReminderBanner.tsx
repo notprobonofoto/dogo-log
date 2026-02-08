@@ -1,10 +1,12 @@
 import { useMemo, useEffect, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, X } from "lucide-react";
 import DogAvatar from "./DogAvatar";
 
 const ReminderBanner = () => {
   const { data } = useApp();
+  const { t } = useLanguage();
   const [dismissed, setDismissed] = useState<string[]>([]);
   const [playSound, setPlaySound] = useState(false);
 
@@ -73,37 +75,43 @@ const ReminderBanner = () => {
   if (upcomingReminders.length === 0) return null;
 
   const getTypeIcon = (type: string) => (type === "weterynarz" ? "🩺" : "✂️");
-  const getTypeName = (type: string) => (type === "weterynarz" ? "Weterynarz" : "Groomer");
+  const getTypeName = (type: string) => (type === "weterynarz" ? t("vet") : t("groomer"));
 
   return (
     <div className="space-y-2 mb-4 animate-fade-in-up">
-      {upcomingReminders.map((reminder) => (
-        <div
-          key={reminder.id}
-          className={`relative flex items-center gap-3 p-3 rounded-xl ${
-            reminder.daysLeft === 1
-              ? "bg-destructive/20 border-2 border-destructive animate-pulse-soft"
-              : "bg-warning/20 border-2 border-warning"
-          }`}
-        >
-          <Bell className={`w-5 h-5 ${reminder.daysLeft === 1 ? "text-destructive" : "text-warning"}`} />
-          <DogAvatar dogId={reminder.dogId} size="sm" />
-          <div className="flex-1">
-            <p className="text-sm font-bold text-foreground">
-              {getTypeIcon(reminder.type)} {getTypeName(reminder.type)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {reminder.daysLeft === 1 ? "Jutro!" : "Za 2 dni"} · {reminder.date}
-            </p>
-          </div>
-          <button
-            onClick={() => setDismissed((d) => [...d, reminder.id])}
-            className="p-1 text-muted-foreground active:scale-95"
+      {upcomingReminders.map((reminder) => {
+        const dog = data.dogs.find(d => d.id === reminder.dogId);
+        return (
+          <div
+            key={reminder.id}
+            className={`relative flex items-center gap-3 p-3 rounded-xl ${
+              reminder.daysLeft === 1
+                ? "bg-destructive/20 border-2 border-destructive animate-pulse-soft"
+                : "bg-warning/20 border-2 border-warning"
+            }`}
           >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ))}
+            <Bell className={`w-5 h-5 ${reminder.daysLeft === 1 ? "text-destructive" : "text-warning"}`} />
+            <div className="flex flex-col items-center">
+              <DogAvatar dogId={reminder.dogId} size="md" />
+              <span className="text-[10px] font-medium">{dog?.name}</span>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-foreground">
+                {getTypeIcon(reminder.type)} {getTypeName(reminder.type)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {reminder.daysLeft === 1 ? t("tomorrow") : t("inTwoDays")} · {reminder.date}
+              </p>
+            </div>
+            <button
+              onClick={() => setDismissed((d) => [...d, reminder.id])}
+              className="p-1 text-muted-foreground active:scale-95"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import pawPrint from "@/assets/paw-print.png";
+import pawPrint from "@/assets/paw-print-orange.png";
 
 interface Paw {
   id: number;
@@ -9,18 +9,20 @@ interface Paw {
   duration: string;
   rotate: string;
   size: number;
+  opacity: number;
 }
 
 const PawBackground = () => {
   const paws = useMemo<Paw[]>(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
+    return Array.from({ length: 40 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 15}s`,
-      duration: `${20 + Math.random() * 15}s`,
+      delay: `${Math.random() * 20}s`,
+      duration: `${25 + Math.random() * 20}s`,
       rotate: `${Math.random() * 360}deg`,
-      size: 24 + Math.random() * 32,
+      size: 20 + Math.random() * 40,
+      opacity: 0.06 + Math.random() * 0.08,
     }));
   }, []);
 
@@ -31,7 +33,7 @@ const PawBackground = () => {
           key={paw.id}
           src={pawPrint}
           alt=""
-          className="absolute animate-paw-drift opacity-15"
+          className="absolute animate-paw-drift-smooth"
           style={{
             left: paw.left,
             top: paw.top,
@@ -40,6 +42,7 @@ const PawBackground = () => {
             transform: `rotate(${paw.rotate})`,
             width: `${paw.size}px`,
             height: `${paw.size}px`,
+            opacity: paw.opacity,
           }}
         />
       ))}

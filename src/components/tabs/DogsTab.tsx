@@ -1,11 +1,13 @@
 import { useState, useRef } from "react";
 import { useApp } from "@/contexts/AppContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import dogPaws from "@/assets/dog-paws.png";
 import { PlusCircle, Trash2, Dog, Camera, Image, X } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 const DogsTab = () => {
   const { data, addDog, removeDog, addDogPhoto, removeDogPhoto } = useApp();
+  const { t } = useLanguage();
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -60,12 +62,12 @@ const DogsTab = () => {
   const dog = selectedDog ? data.dogs.find((d) => d.id === selectedDog) : null;
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-safe">
+    <div className="min-h-screen pb-24 px-4 pt-safe">
       <div className="flex items-center justify-center gap-3 pt-4 mb-2">
-        <h1 className="text-xl font-extrabold text-foreground">Pieski</h1>
+        <h1 className="text-xl font-extrabold text-foreground">{t("dogsTitle")}</h1>
       </div>
       <div className="flex justify-center mb-4">
-        <img src={dogPaws} alt="" className="w-20 h-20 animate-wiggle" />
+        <img src={dogPaws} alt="" className="w-24 h-24 animate-wiggle" />
       </div>
 
       {!showForm && !selectedDog && (
@@ -74,31 +76,39 @@ const DogsTab = () => {
           className="w-full flex flex-col items-center justify-center gap-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-lg transition-all active:scale-95 hover:scale-[1.02] animate-button-ready mb-4"
         >
           <PlusCircle className="w-6 h-6" />
-          <span className="text-xs">Dodaj pieska</span>
+          <span className="text-xs">{t("addDog")}</span>
         </button>
       )}
 
       {showForm && (
         <div className="bg-card rounded-xl p-4 mb-4 space-y-3 animate-slide-up-bounce">
-          <h3 className="font-bold text-foreground">🐶</h3>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Imię pieska"
+          <h3 className="font-bold text-foreground">🐶 {t("name")}</h3>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("name")}
             className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" autoFocus />
+          
+          <label className="text-sm font-semibold text-foreground">{t("birthDate")}</label>
           <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)}
             className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+          
+          <label className="text-sm font-semibold text-foreground">{t("sex")}</label>
           <div className="flex gap-2">
             <button onClick={() => setSex("male")}
-              className={`flex-1 py-2 rounded-lg font-semibold text-xl transition-all ${sex === "male" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              className={`flex-1 flex flex-col items-center py-2 rounded-lg font-semibold text-xl transition-all ${sex === "male" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
               ♂️
+              <span className="text-[10px]">{t("male")}</span>
             </button>
             <button onClick={() => setSex("female")}
-              className={`flex-1 py-2 rounded-lg font-semibold text-xl transition-all ${sex === "female" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              className={`flex-1 flex flex-col items-center py-2 rounded-lg font-semibold text-xl transition-all ${sex === "female" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
               ♀️
+              <span className="text-[10px]">{t("female")}</span>
             </button>
           </div>
-          <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="Rasa (opcjonalnie)"
+          
+          <label className="text-sm font-semibold text-foreground">{t("breed")} ({t("breedOptional")})</label>
+          <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder={t("breed")}
             className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
           <div className="flex gap-2">
-            <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-lg bg-muted text-muted-foreground font-semibold">Anuluj</button>
+            <button onClick={() => setShowForm(false)} className="flex-1 py-2 rounded-lg bg-muted text-muted-foreground font-semibold">{t("cancel")}</button>
             <button onClick={handleSubmit} disabled={!name.trim()} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground font-bold disabled:opacity-40">✓</button>
           </div>
         </div>
@@ -155,7 +165,7 @@ const DogsTab = () => {
             />
 
             {dog.photos.length === 0 ? (
-              <p className="text-xs text-muted-foreground">Brak zdjęć</p>
+              <p className="text-xs text-muted-foreground">{t("none")}</p>
             ) : (
               <div className="grid grid-cols-3 gap-2">
                 {dog.photos.map((photo) => (
@@ -185,7 +195,7 @@ const DogsTab = () => {
           {data.dogs.length === 0 && !showForm && (
             <div className="text-center py-8 animate-fade-in-up">
               <Dog className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-              <p className="text-muted-foreground">Brak piesków</p>
+              <p className="text-muted-foreground">{t("none")}</p>
             </div>
           )}
           {data.dogs.map((dog, i) => (
@@ -194,7 +204,7 @@ const DogsTab = () => {
                 className="flex items-center gap-3 flex-1 text-left"
                 onClick={() => setSelectedDog(dog.id)}
               >
-                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
                   {dog.photos.length > 0 ? (
                     <img src={dog.photos[0].dataUrl} alt={dog.name} className="w-full h-full object-cover" />
                   ) : (
@@ -219,16 +229,16 @@ const DogsTab = () => {
 
       <ConfirmDialog
         open={!!deleteId}
-        title="Usuń pieska?"
-        message="Usunięcie pieska usunie wszystkie jego dane: spacery, jedzenie, zdrowie i zdjęcia."
+        title={t("delete")}
+        message={t("deleteEventConfirm")}
         onConfirm={() => { if (deleteId) { removeDog(deleteId); setDeleteId(null); } }}
         onCancel={() => setDeleteId(null)}
       />
 
       <ConfirmDialog
         open={!!deletePhotoId}
-        title="Usuń zdjęcie?"
-        message="Czy na pewno chcesz usunąć to zdjęcie?"
+        title={t("delete")}
+        message={t("deleteEventConfirm")}
         onConfirm={() => { if (deletePhotoId) { removeDogPhoto(deletePhotoId.dogId, deletePhotoId.photoId); setDeletePhotoId(null); } }}
         onCancel={() => setDeletePhotoId(null)}
       />
