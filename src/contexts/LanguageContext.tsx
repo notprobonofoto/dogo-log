@@ -52,6 +52,11 @@ const translations = {
     install: "Instaluj",
     logout: "Wyloguj",
     dogHappiness: "Szczęście psów",
+    walksCategory: "Spacery",
+    mealsCategory: "Posiłki",
+    regularityCategory: "Regularność",
+    accidentsCategory: "Zdarzenia domowe",
+    points: "pkt",
     
     // Walks Tab
     walksTitle: "Spacery",
@@ -233,6 +238,11 @@ const translations = {
     install: "Install",
     logout: "Logout",
     dogHappiness: "Dog Happiness",
+    walksCategory: "Walks",
+    mealsCategory: "Meals",
+    regularityCategory: "Regularity",
+    accidentsCategory: "Home accidents",
+    points: "pts",
     
     // Walks Tab
     walksTitle: "Walks",
