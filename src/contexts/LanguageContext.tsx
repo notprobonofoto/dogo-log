@@ -72,6 +72,8 @@ const translations = {
     nothing: "Nic",
     noBusiness: "Nic",
     addWalk: "Dodaj spacer",
+    addHomeEvent: "Dodaj zdarzenie",
+    poopNotePlaceholder: "np. nieprawidłowa kupa",
     business: "Co zrobił?",
     
     // Food Tab
@@ -87,10 +89,15 @@ const translations = {
     mixed: "Mieszane",
     treat: "Smaczek",
     other: "Inne",
+    otherFoodPlaceholder: "Co to było za jedzenie?",
     dryFood: "Suche",
     wetFood: "Mokre",
     mixedFood: "Mieszane",
     mealType: "Rodzaj posiłku",
+    
+    // User stats
+    userStats: "Aktywność domowników",
+    thisWeek: "W tym tygodniu",
     
     // Health Tab
     healthTitle: "Zdrowie",
@@ -246,6 +253,8 @@ const translations = {
     nothing: "None",
     noBusiness: "None",
     addWalk: "Add walk",
+    addHomeEvent: "Add event",
+    poopNotePlaceholder: "e.g. abnormal stool",
     business: "What did they do?",
     
     // Food Tab
@@ -261,10 +270,15 @@ const translations = {
     mixed: "Mixed",
     treat: "Treat",
     other: "Other",
+    otherFoodPlaceholder: "What was the food?",
     dryFood: "Dry food",
     wetFood: "Wet food",
     mixedFood: "Mixed food",
     mealType: "Meal type",
+    
+    // User stats
+    userStats: "Member activity",
+    thisWeek: "This week",
     
     // Health Tab
     healthTitle: "Health",

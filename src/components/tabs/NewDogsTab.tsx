@@ -96,11 +96,14 @@ const NewDogsTab = () => {
             onChange={(e) => setBirthDate(e.target.value)}
             className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
+          {/* Sex buttons with outline style for active */}
           <div className="flex gap-2">
             <button
               onClick={() => setSex("male")}
               className={`flex-1 py-3 rounded-lg font-bold transition-all ${
-                sex === "male" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                sex === "male" 
+                  ? "border-2 border-primary bg-transparent text-primary" 
+                  : "bg-secondary text-secondary-foreground border-2 border-transparent"
               }`}
             >
               ♂️ {t("male")}
@@ -108,7 +111,9 @@ const NewDogsTab = () => {
             <button
               onClick={() => setSex("female")}
               className={`flex-1 py-3 rounded-lg font-bold transition-all ${
-                sex === "female" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                sex === "female" 
+                  ? "border-2 border-primary bg-transparent text-primary" 
+                  : "bg-secondary text-secondary-foreground border-2 border-transparent"
               }`}
             >
               ♀️ {t("female")}

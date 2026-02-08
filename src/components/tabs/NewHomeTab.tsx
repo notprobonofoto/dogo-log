@@ -11,6 +11,7 @@ import HappinessCard from "@/components/HappinessCard";
 import LanguageSelector from "@/components/LanguageSelector";
 import WelcomeGreeting from "@/components/WelcomeGreeting";
 import NotificationPanel from "@/components/NotificationPanel";
+import UserStatsCard from "@/components/UserStatsCard";
 import { Link } from "react-router-dom";
 
 type ActiveTab = "home" | "calendar" | "walks" | "food" | "health" | "dogs";
@@ -86,7 +87,7 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
                   key={member.id}
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
                     member.id === profileId
-                      ? "bg-primary/20 text-primary"
+                      ? "border-2 border-primary bg-transparent text-primary"
                       : "bg-secondary text-secondary-foreground"
                   }`}
                 >
@@ -137,6 +138,9 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
       <ReminderBanner />
       <WalkReminderBanner />
       <HappinessCard />
+      
+      {/* User stats card */}
+      <UserStatsCard />
 
       <div className="grid grid-cols-2 gap-3 mb-4">
         <button

@@ -278,6 +278,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       profile_id: w.profile_id,
       profile_name: w.profiles?.name,
       business: w.business as WalkBusiness,
+      note: w.note || undefined,
     }));
   }, [householdId]);
 
@@ -305,6 +306,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       type: m.type as MealType,
       profile_id: m.profile_id,
       profile_name: m.profiles?.name,
+      note: m.note || undefined,
     }));
   }, [householdId]);
 
@@ -608,7 +610,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     await refreshData();
   };
 
-  const addWalk = async (walk: { dogIds: string[]; date: string; time: string; duration: number; business: WalkBusiness }) => {
+  const addWalk = async (walk: { dogIds: string[]; date: string; time: string; duration: number; business: WalkBusiness; note?: string }) => {
     if (!householdId || !profileId) return;
 
     const { data: walkData, error: walkError } = await supabase
@@ -620,6 +622,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         time: walk.time,
         duration: walk.duration,
         business: walk.business,
+        note: walk.note || null,
       })
       .select()
       .single();
@@ -651,7 +654,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     await refreshData();
   };
 
-  const addMeal = async (meal: Omit<Meal, "id" | "profile_id" | "profile_name">) => {
+  const addMeal = async (meal: Omit<Meal, "id" | "profile_id" | "profile_name"> & { note?: string }) => {
     if (!householdId || !profileId) return;
 
     const { error } = await supabase.from("meals").insert({
@@ -661,6 +664,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       date: meal.date,
       time: meal.time,
       type: meal.type,
+      note: meal.note || null,
     });
 
     if (error) {
