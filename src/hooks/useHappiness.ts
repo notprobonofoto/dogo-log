@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useData } from "@/contexts/DataContext";
 
 export interface DogHappiness {
   dogId: string;
@@ -11,18 +11,18 @@ export interface DogHappiness {
 const today = () => new Date().toISOString().split("T")[0];
 
 export const useHappiness = (): DogHappiness[] => {
-  const { data } = useApp();
+  const { dogs, walks, meals, homeAccidents } = useData();
   
   return useMemo(() => {
     const todayStr = today();
     const currentHour = new Date().getHours();
     
-    return data.dogs.map((dog) => {
+    return dogs.map((dog) => {
       let score = 50; // Base score
       
       // === WALKS (max 40 points) ===
-      const todayWalks = data.walks.filter(
-        (w) => w.date === todayStr && w.dogIds.includes(dog.id)
+      const todayWalks = walks.filter(
+        (w) => w.date === todayStr && w.dog_ids.includes(dog.id)
       );
       const walkCount = todayWalks.length;
       
@@ -43,8 +43,8 @@ export const useHappiness = (): DogHappiness[] => {
       weekAgo.setDate(weekAgo.getDate() - 7);
       const weekAgoStr = weekAgo.toISOString().split("T")[0];
       
-      const recentWalks = data.walks.filter(
-        (w) => w.date >= weekAgoStr && w.dogIds.includes(dog.id)
+      const recentWalks = walks.filter(
+        (w) => w.date >= weekAgoStr && w.dog_ids.includes(dog.id)
       );
       
       if (recentWalks.length >= 3) {
@@ -75,8 +75,8 @@ export const useHappiness = (): DogHappiness[] => {
       }
       
       // === HOME ACCIDENTS (max -30 points) ===
-      const todayAccidents = data.homeAccidents.filter(
-        (a) => a.date === todayStr && a.dogId === dog.id
+      const todayAccidents = homeAccidents.filter(
+        (a) => a.date === todayStr && a.dog_id === dog.id
       );
       
       const hasPee = todayAccidents.some((a) => a.type === "pee");
@@ -91,8 +91,8 @@ export const useHappiness = (): DogHappiness[] => {
       }
       
       // === FOOD (max 20 points) ===
-      const todayMeals = data.meals.filter(
-        (m) => m.date === todayStr && m.dogId === dog.id
+      const todayMeals = meals.filter(
+        (m) => m.date === todayStr && m.dog_id === dog.id
       );
       const mealCount = todayMeals.length;
       
@@ -114,16 +114,16 @@ export const useHappiness = (): DogHappiness[] => {
       
       if (score >= 80) {
         emoji = "😄";
-        color = "hsl(140, 50%, 46%)"; // success green
+        color = "hsl(var(--success))";
       } else if (score >= 50) {
         emoji = "🙂";
-        color = "hsl(207, 55%, 52%)"; // primary blue
+        color = "hsl(var(--primary))";
       } else if (score >= 30) {
         emoji = "😐";
-        color = "hsl(30, 95%, 55%)"; // warning orange
+        color = "hsl(var(--warning))";
       } else {
         emoji = "😞";
-        color = "hsl(0, 72%, 58%)"; // destructive red
+        color = "hsl(var(--destructive))";
       }
       
       return {
@@ -133,5 +133,5 @@ export const useHappiness = (): DogHappiness[] => {
         color,
       };
     });
-  }, [data]);
+  }, [dogs, walks, meals, homeAccidents]);
 };

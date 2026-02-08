@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useData } from "@/contexts/DataContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const REMINDER_KEY = "dogolog_walk_reminders";
 const NOTIFICATION_PREFS_KEY = "dogolog_notification_prefs";
 
 interface NotificationPrefs {
@@ -39,7 +39,8 @@ export interface WalkReminderData {
 }
 
 export const useWalkReminder = (): WalkReminderData => {
-  const { data } = useApp();
+  const { walks } = useData();
+  const { t } = useLanguage();
   const [dismissed, setDismissed] = useState(false);
   const [prefs, setPrefs] = useState(getNotificationPrefs);
 
@@ -47,7 +48,7 @@ export const useWalkReminder = (): WalkReminderData => {
   const averageWalkTimesByDay = useMemo(() => {
     const dayTimes: Record<number, number[]> = {};
     
-    data.walks.forEach((walk) => {
+    walks.forEach((walk) => {
       const walkDate = new Date(walk.date);
       const dayOfWeek = walkDate.getDay();
       const [hours, minutes] = walk.time.split(":").map(Number);
@@ -67,7 +68,7 @@ export const useWalkReminder = (): WalkReminderData => {
     });
     
     return averages;
-  }, [data.walks]);
+  }, [walks]);
 
   const todayStr = today();
   const currentDayOfWeek = new Date().getDay();
@@ -78,7 +79,7 @@ export const useWalkReminder = (): WalkReminderData => {
   const averageTimeForToday = averageWalkTimesByDay[currentDayOfWeek];
   
   // Check if there was a walk today
-  const hadWalkToday = data.walks.some((w) => w.date === todayStr);
+  const hadWalkToday = walks.some((w) => w.date === todayStr);
 
   // Anti-spam rules
   const isQuietHours = currentHour < 7 || currentHour >= 21;
@@ -171,6 +172,6 @@ export const useWalkReminder = (): WalkReminderData => {
     shouldShow,
     averageTime: averageTimeForToday ? formatTime(averageTimeForToday) : null,
     dismiss,
-    message: "Z reguły wychodzisz o tej godzinie z psem — może warto się zbierać?",
+    message: t("walkReminder"),
   };
 };

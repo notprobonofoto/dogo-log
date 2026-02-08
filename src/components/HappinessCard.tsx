@@ -1,14 +1,14 @@
 import { useHappiness } from "@/hooks/useHappiness";
-import { useApp } from "@/contexts/AppContext";
+import { useData } from "@/contexts/DataContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DogAvatar from "./DogAvatar";
 
 const HappinessCard = () => {
   const happiness = useHappiness();
-  const { data } = useApp();
+  const { dogs } = useData();
   const { t } = useLanguage();
 
-  if (data.dogs.length === 0) return null;
+  if (dogs.length === 0) return null;
 
   return (
     <div className="bg-card rounded-2xl p-4 mb-4 animate-fade-in-up">
@@ -16,7 +16,7 @@ const HappinessCard = () => {
         {t("dogHappiness")}
       </h2>
       <div className="grid gap-3">
-        {data.dogs.map((dog) => {
+        {dogs.map((dog) => {
           const dogHappiness = happiness.find((h) => h.dogId === dog.id);
           if (!dogHappiness) return null;
 

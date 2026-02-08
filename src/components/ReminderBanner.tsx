@@ -1,11 +1,11 @@
 import { useMemo, useEffect, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useData } from "@/contexts/DataContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, X } from "lucide-react";
 import DogAvatar from "./DogAvatar";
 
 const ReminderBanner = () => {
-  const { data } = useApp();
+  const { dogs, healthEvents } = useData();
   const { t } = useLanguage();
   const [dismissed, setDismissed] = useState<string[]>([]);
   const [playSound, setPlaySound] = useState(false);
@@ -16,11 +16,11 @@ const ReminderBanner = () => {
     
     const reminders: { id: string; dogId: string; type: string; date: string; daysLeft: number }[] = [];
     
-    data.healthEvents.forEach((event) => {
-      if (!event.nextVisit) return;
+    healthEvents.forEach((event) => {
+      if (!event.next_visit) return;
       if (event.type !== "weterynarz" && event.type !== "groomer") return;
       
-      const visitDate = new Date(event.nextVisit);
+      const visitDate = new Date(event.next_visit);
       visitDate.setHours(0, 0, 0, 0);
       const diffTime = visitDate.getTime() - today.getTime();
       const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -28,16 +28,16 @@ const ReminderBanner = () => {
       if (daysLeft === 1 || daysLeft === 2) {
         reminders.push({
           id: event.id,
-          dogId: event.dogId,
+          dogId: event.dog_id,
           type: event.type,
-          date: event.nextVisit,
+          date: event.next_visit,
           daysLeft,
         });
       }
     });
     
     return reminders.filter((r) => !dismissed.includes(r.id));
-  }, [data.healthEvents, dismissed]);
+  }, [healthEvents, dismissed]);
 
   useEffect(() => {
     if (upcomingReminders.length > 0 && !playSound) {
@@ -80,7 +80,7 @@ const ReminderBanner = () => {
   return (
     <div className="space-y-2 mb-4 animate-fade-in-up">
       {upcomingReminders.map((reminder) => {
-        const dog = data.dogs.find(d => d.id === reminder.dogId);
+        const dog = dogs.find(d => d.id === reminder.dogId);
         return (
           <div
             key={reminder.id}
