@@ -440,6 +440,7 @@ export type Database = {
         Args: { code_to_check: string }
         Returns: string
       }
+      get_my_household_id: { Args: never; Returns: string }
       get_session_household_id: { Args: never; Returns: string }
       get_user_household_id: { Args: never; Returns: string }
       household_code_exists: {
