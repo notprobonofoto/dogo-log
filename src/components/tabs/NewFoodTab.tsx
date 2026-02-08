@@ -13,23 +13,29 @@ const NewFoodTab = () => {
   const { t } = useLanguage();
 
   const [showForm, setShowForm] = useState(false);
-  const [selectedDog, setSelectedDog] = useState<string | null>(null);
+  const [selectedDogs, setSelectedDogs] = useState<string[]>([]);
   const [mealType, setMealType] = useState<MealType>("dry");
   const [date, setDate] = useState(today());
   const [time, setTime] = useState(now());
   const [otherNote, setOtherNote] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const toggleDog = (id: string) => {
+    setSelectedDogs((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
   const handleAdd = async () => {
-    if (!selectedDog) return;
+    if (selectedDogs.length === 0) return;
     await addMeal({ 
-      dog_id: selectedDog, 
+      dogIds: selectedDogs, 
       date, 
       time, 
       type: mealType,
       note: mealType === "other" && otherNote.trim() ? otherNote.trim() : undefined
     });
-    setSelectedDog(null);
+    setSelectedDogs([]);
     setMealType("dry");
     setDate(today());
     setTime(now());
@@ -42,6 +48,10 @@ const NewFoodTab = () => {
 
   const getDogName = (dogId: string) => {
     return dogs.find((d) => d.id === dogId)?.name || "?";
+  };
+
+  const getDogNames = (dogIds: string[]) => {
+    return dogIds.map(id => getDogName(id)).join(", ");
   };
 
   const mealIcons: Record<MealType, string> = {
@@ -76,21 +86,21 @@ const NewFoodTab = () => {
 
       {showForm && (
         <div className="bg-card rounded-xl p-4 mb-6 animate-fade-in-up space-y-4" role="form" aria-label={t("addMeal")}>
-          {/* Dog selection - 2 per row */}
+          {/* Dog selection - checkboxes for multiple dogs */}
           <fieldset>
             <legend className="sr-only">{t("whoEats")}</legend>
-            <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t("whoEats")}>
+            <div className="grid grid-cols-2 gap-3" role="group" aria-label={t("whoEats")}>
               {dogs.map((dog) => (
                 <button
                   key={dog.id}
-                  onClick={() => setSelectedDog(dog.id)}
+                  onClick={() => toggleDog(dog.id)}
                   className={`flex items-center gap-3 p-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
-                    selectedDog === dog.id 
+                    selectedDogs.includes(dog.id) 
                       ? "border-2 border-accent bg-transparent" 
                       : "bg-secondary border-2 border-transparent"
                   }`}
-                  role="radio"
-                  aria-checked={selectedDog === dog.id}
+                  role="checkbox"
+                  aria-checked={selectedDogs.includes(dog.id)}
                   aria-label={dog.name}
                 >
                   <DogAvatar dogId={dog.id} size="lg" />
@@ -169,7 +179,7 @@ const NewFoodTab = () => {
 
           <button
             onClick={handleAdd}
-            disabled={!selectedDog}
+            disabled={selectedDogs.length === 0}
             className="w-full py-3 rounded-lg bg-accent text-accent-foreground font-bold disabled:opacity-50 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             aria-label={t("addMeal")}
           >
@@ -186,12 +196,16 @@ const NewFoodTab = () => {
             key={meal.id} 
             className="bg-card rounded-xl p-4 flex items-center gap-4 animate-fade-in-up"
             role="listitem"
-            aria-label={`${t("meals")}: ${getDogName(meal.dog_id)} o ${meal.time}`}
+            aria-label={`${t("meals")}: ${getDogNames(meal.dog_ids)} o ${meal.time}`}
           >
-            <DogAvatar dogId={meal.dog_id} size="lg" />
+            <div className="flex -space-x-2">
+              {meal.dog_ids.map((dogId) => (
+                <DogAvatar key={dogId} dogId={dogId} size="lg" />
+              ))}
+            </div>
 
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-foreground truncate">{getDogName(meal.dog_id)}</p>
+              <p className="font-semibold text-foreground truncate">{getDogNames(meal.dog_ids)}</p>
               <p className="text-sm text-muted-foreground">
                 {meal.time} • <span aria-hidden="true">{mealIcons[meal.type]}</span> {mealLabels[meal.type]}
                 {meal.profile_name && ` • ${meal.profile_name}`}
@@ -204,7 +218,7 @@ const NewFoodTab = () => {
             <button
               onClick={() => setDeleteId(meal.id)}
               className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-              aria-label={`${t("deleteMeal")}: ${getDogName(meal.dog_id)} o ${meal.time}`}
+              aria-label={`${t("deleteMeal")}: ${getDogNames(meal.dog_ids)} o ${meal.time}`}
             >
               <Trash2 className="w-5 h-5" aria-hidden="true" />
             </button>

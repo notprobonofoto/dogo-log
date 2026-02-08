@@ -195,11 +195,44 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_dogs: {
+        Row: {
+          dog_id: string
+          id: string
+          meal_id: string
+        }
+        Insert: {
+          dog_id: string
+          id?: string
+          meal_id: string
+        }
+        Update: {
+          dog_id?: string
+          id?: string
+          meal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_dogs_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_dogs_meal_id_fkey"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meals: {
         Row: {
           created_at: string
           date: string
-          dog_id: string
+          dog_id: string | null
           household_id: string
           id: string
           note: string | null
@@ -210,7 +243,7 @@ export type Database = {
         Insert: {
           created_at?: string
           date: string
-          dog_id: string
+          dog_id?: string | null
           household_id: string
           id?: string
           note?: string | null
@@ -221,7 +254,7 @@ export type Database = {
         Update: {
           created_at?: string
           date?: string
-          dog_id?: string
+          dog_id?: string | null
           household_id?: string
           id?: string
           note?: string | null
@@ -342,6 +375,38 @@ export type Database = {
             columns: ["household_id"]
             isOneToOne: false
             referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          keys: Json
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          keys: Json
+          profile_id: string
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          keys?: Json
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

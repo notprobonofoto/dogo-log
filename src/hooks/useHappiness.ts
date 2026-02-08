@@ -92,7 +92,7 @@ export const useHappiness = (): DogHappiness[] => {
       
       // === FOOD (max 20 points) ===
       const todayMeals = meals.filter(
-        (m) => m.date === todayStr && m.dog_id === dog.id
+        (m) => m.date === todayStr && m.dog_ids.includes(dog.id)
       );
       const mealCount = todayMeals.length;
       

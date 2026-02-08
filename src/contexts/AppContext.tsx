@@ -46,7 +46,7 @@ export type MealType = "dry" | "wet" | "mixed" | "treat" | "other";
 
 export interface Meal {
   id: string;
-  dog_id: string;
+  dog_ids: string[];
   date: string;
   time: string;
   type: MealType;
@@ -110,7 +110,7 @@ interface AppContextType {
   removeDogPhoto: (dogId: string, photoId: string) => Promise<void>;
   addWalk: (walk: { dogIds: string[]; date: string; time: string; duration: number; business: WalkBusiness; note?: string }) => Promise<void>;
   removeWalk: (id: string) => Promise<void>;
-  addMeal: (meal: Omit<Meal, "id" | "profile_id" | "profile_name"> & { note?: string }) => Promise<void>;
+  addMeal: (meal: { dogIds: string[]; date: string; time: string; type: MealType; note?: string }) => Promise<void>;
   removeMeal: (id: string) => Promise<void>;
   addHealthEvent: (event: Omit<HealthEvent, "id">) => Promise<void>;
   removeHealthEvent: (id: string) => Promise<void>;
@@ -280,7 +280,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       .from("meals")
       .select(`
         *,
-        profiles:profile_id (name)
+        profiles:profile_id (name),
+        meal_dogs (dog_id)
       `)
       .eq("household_id", householdId);
 
@@ -291,7 +292,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return (data || []).map((m: any) => ({
       id: m.id,
-      dog_id: m.dog_id,
+      dog_ids: m.meal_dogs?.map((md: any) => md.dog_id) || (m.dog_id ? [m.dog_id] : []),
       date: m.date,
       time: m.time,
       type: m.type as MealType,
@@ -753,23 +754,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     await refreshData();
   };
 
-  const addMeal = async (meal: Omit<Meal, "id" | "profile_id" | "profile_name"> & { note?: string }) => {
+  const addMeal = async (meal: { dogIds: string[]; date: string; time: string; type: MealType; note?: string }) => {
     if (!householdId || !profileId) return;
 
-    const { error } = await supabase.from("meals").insert({
+    // Create meal with first dog_id for backwards compatibility (or null if no dogs)
+    const { data: mealData, error } = await supabase.from("meals").insert({
       household_id: householdId,
-      dog_id: meal.dog_id,
+      dog_id: meal.dogIds[0] || null,
       profile_id: profileId,
       date: meal.date,
       time: meal.time,
       type: meal.type,
       note: meal.note || null,
-    });
+    }).select().single();
 
     if (error) {
       console.error("Error adding meal:", error);
       return;
     }
+
+    // Add meal_dogs entries for multi-dog support
+    if (meal.dogIds.length > 0 && mealData) {
+      const { error: dogsError } = await supabase.from("meal_dogs").insert(
+        meal.dogIds.map(dogId => ({ meal_id: mealData.id, dog_id: dogId }))
+      );
+
+      if (dogsError) {
+        console.error("Error adding meal dogs:", dogsError);
+      }
+    }
+
     await refreshData();
   };
 
