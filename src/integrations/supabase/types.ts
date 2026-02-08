@@ -14,13 +14,431 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dog_photos: {
+        Row: {
+          created_at: string
+          data_url: string
+          dog_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          data_url: string
+          dog_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          data_url?: string
+          dog_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dog_photos_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dogs: {
+        Row: {
+          birth_date: string
+          breed: string | null
+          created_at: string
+          household_id: string
+          id: string
+          name: string
+          sex: string
+        }
+        Insert: {
+          birth_date: string
+          breed?: string | null
+          created_at?: string
+          household_id: string
+          id?: string
+          name: string
+          sex: string
+        }
+        Update: {
+          birth_date?: string
+          breed?: string | null
+          created_at?: string
+          household_id?: string
+          id?: string
+          name?: string
+          sex?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dogs_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      health_events: {
+        Row: {
+          created_at: string
+          date: string
+          dog_id: string
+          household_id: string
+          id: string
+          next_visit: string | null
+          note: string | null
+          type: string
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          dog_id: string
+          household_id: string
+          id?: string
+          next_visit?: string | null
+          note?: string | null
+          type: string
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          dog_id?: string
+          household_id?: string
+          id?: string
+          next_visit?: string | null
+          note?: string | null
+          type?: string
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_events_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "health_events_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_accidents: {
+        Row: {
+          created_at: string
+          date: string
+          dog_id: string
+          household_id: string
+          id: string
+          time: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          dog_id: string
+          household_id: string
+          id?: string
+          time: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          dog_id?: string
+          household_id?: string
+          id?: string
+          time?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_accidents_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_accidents_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      meals: {
+        Row: {
+          created_at: string
+          date: string
+          dog_id: string
+          household_id: string
+          id: string
+          profile_id: string | null
+          time: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          dog_id: string
+          household_id: string
+          id?: string
+          profile_id?: string | null
+          time: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          dog_id?: string
+          household_id?: string
+          id?: string
+          profile_id?: string | null
+          time?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meals_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meals_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meals_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          from_profile_id: string
+          household_id: string
+          id: string
+          is_read: boolean
+          note: string | null
+          scheduled_time: string | null
+          to_profile_id: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          from_profile_id: string
+          household_id: string
+          id?: string
+          is_read?: boolean
+          note?: string | null
+          scheduled_time?: string | null
+          to_profile_id?: string | null
+          type: string
+        }
+        Update: {
+          created_at?: string
+          from_profile_id?: string
+          household_id?: string
+          id?: string
+          is_read?: boolean
+          note?: string | null
+          scheduled_time?: string | null
+          to_profile_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_from_profile_id_fkey"
+            columns: ["from_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_to_profile_id_fkey"
+            columns: ["to_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          household_id: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          household_id: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          household_id?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      walk_dogs: {
+        Row: {
+          dog_id: string
+          id: string
+          walk_id: string
+        }
+        Insert: {
+          dog_id: string
+          id?: string
+          walk_id: string
+        }
+        Update: {
+          dog_id?: string
+          id?: string
+          walk_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "walk_dogs_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "walk_dogs_walk_id_fkey"
+            columns: ["walk_id"]
+            isOneToOne: false
+            referencedRelation: "walks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      walks: {
+        Row: {
+          business: string
+          created_at: string
+          date: string
+          duration: number
+          household_id: string
+          id: string
+          profile_id: string | null
+          time: string
+        }
+        Insert: {
+          business?: string
+          created_at?: string
+          date: string
+          duration?: number
+          household_id: string
+          id?: string
+          profile_id?: string | null
+          time: string
+        }
+        Update: {
+          business?: string
+          created_at?: string
+          date?: string
+          duration?: number
+          household_id?: string
+          id?: string
+          profile_id?: string | null
+          time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "walks_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "walks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_unique_household_code: { Args: never; Returns: string }
+      get_household_id_by_code: {
+        Args: { code_to_check: string }
+        Returns: string
+      }
+      get_user_household_id: { Args: never; Returns: string }
+      household_code_exists: {
+        Args: { code_to_check: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
