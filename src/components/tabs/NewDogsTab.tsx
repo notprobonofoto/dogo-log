@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Plus, Trash2, Camera, X, Scale } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -24,7 +24,7 @@ const calculateAge = (birthDate: string): string => {
 };
 
 const NewDogsTab = () => {
-  const { dogs, addDog, removeDog, addDogPhoto, removeDogPhoto, getDogLatestWeight } = useData();
+  const { dogs, addDog, removeDog, addDogPhoto, removeDogPhoto, getDogLatestWeight } = useApp();
   const { t } = useLanguage();
 
   const [showForm, setShowForm] = useState(false);

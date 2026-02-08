@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp, type MealType } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Utensils, Plus, Trash2 } from "lucide-react";
 import DogAvatar from "@/components/DogAvatar";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import type { MealType } from "@/contexts/DataContext";
 
 const today = () => new Date().toISOString().split("T")[0];
 const now = () => new Date().toTimeString().slice(0, 5);
 
 const NewFoodTab = () => {
-  const { dogs, meals, addMeal, removeMeal } = useData();
+  const { dogs, meals, addMeal, removeMeal } = useApp();
   const { t } = useLanguage();
 
   const [showForm, setShowForm] = useState(false);

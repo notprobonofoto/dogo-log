@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 
 export interface DogHappiness {
   dogId: string;
@@ -11,7 +11,7 @@ export interface DogHappiness {
 const today = () => new Date().toISOString().split("T")[0];
 
 export const useHappiness = (): DogHappiness[] => {
-  const { dogs, walks, meals, homeAccidents } = useData();
+  const { dogs, walks, meals, homeAccidents } = useApp();
   
   return useMemo(() => {
     const todayStr = today();

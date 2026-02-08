@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { X, Bell, PawPrint, Utensils, MoreHorizontal, Send, Clock } from "lucide-react";
 
@@ -20,7 +20,7 @@ interface NotificationPanelProps {
 }
 
 const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
-  const { profile, householdId, householdMembers } = useAuth();
+  const { profileId, householdId, householdMembers } = useApp();
   const { t } = useLanguage();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -92,13 +92,13 @@ const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
   };
 
   const sendNotification = async () => {
-    if (!profile || !householdId) return;
+    if (!profileId || !householdId) return;
 
     setSending(true);
 
     const { error } = await supabase.from("notifications").insert({
       household_id: householdId,
-      from_profile_id: profile.id,
+      from_profile_id: profileId,
       type: sendType,
       scheduled_time: sendTime || null,
       note: sendNote.trim() || null,
@@ -129,7 +129,7 @@ const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
     other: t("other"),
   };
 
-  const unreadCount = notifications.filter((n) => !n.is_read && n.from_profile_id !== profile?.id).length;
+  const unreadCount = notifications.filter((n) => !n.is_read && n.from_profile_id !== profileId).length;
 
   return (
     <div className="bg-card rounded-xl p-4 mb-4 animate-fade-in-up">
@@ -211,7 +211,7 @@ const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
           <p className="text-center text-muted-foreground text-sm py-4">{t("noNotifications")}</p>
         ) : (
           notifications.map((n) => {
-            const isOwn = n.from_profile_id === profile?.id;
+            const isOwn = n.from_profile_id === profileId;
             const isUnread = !n.is_read && !isOwn;
 
             return (

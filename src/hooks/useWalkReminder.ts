@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
-import { useData } from "@/contexts/DataContext";
+import { useApp } from "@/contexts/AppContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const NOTIFICATION_PREFS_KEY = "dogolog_notification_prefs";
@@ -39,7 +39,7 @@ export interface WalkReminderData {
 }
 
 export const useWalkReminder = (): WalkReminderData => {
-  const { walks } = useData();
+  const { walks } = useApp();
   const { t } = useLanguage();
   const [dismissed, setDismissed] = useState(false);
   const [prefs, setPrefs] = useState(getNotificationPrefs);
