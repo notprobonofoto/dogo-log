@@ -25,7 +25,7 @@ const NewHomeTab = ({ setActiveTab }: NewHomeTabProps) => {
   const todayMeals = meals.filter((m) => m.date === todayStr).length;
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6" role="main" aria-label="Strona główna">
+    <div className="min-h-screen pb-24 px-4 pt-2" role="main" aria-label="Strona główna">
 
       <div className="flex justify-center mb-4 animate-fade-in-up">
         <img src={logo} alt="DogoLog - aplikacja do zarządzania pieskami" className="w-36 h-auto" />
