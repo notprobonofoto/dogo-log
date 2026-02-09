@@ -192,6 +192,17 @@ const translations = {
     language: "Język",
     settings: "Ustawienia",
     
+    // Push notifications
+    pushNotifications: "Powiadomienia push",
+    pushEnabled: "Włączone",
+    pushDisabled: "Wyłączone",
+    pushBlocked: "Zablokowane",
+    pushUnsupported: "Nieobsługiwane",
+    enablePush: "Włącz powiadomienia",
+    disablePush: "Wyłącz",
+    testPush: "Test",
+    pushBlockedInfo: "Powiadomienia są zablokowane w przeglądarce. Aby je włączyć, przejdź do ustawień przeglądarki i odblokuj powiadomienia dla tej strony.",
+    
     // Notifications
     notifications: "Powiadomienia",
     sendRequest: "Wyślij prośbę",
@@ -394,6 +405,17 @@ const translations = {
     // Settings
     language: "Language",
     settings: "Settings",
+    
+    // Push notifications
+    pushNotifications: "Push notifications",
+    pushEnabled: "Enabled",
+    pushDisabled: "Disabled",
+    pushBlocked: "Blocked",
+    pushUnsupported: "Unsupported",
+    enablePush: "Enable notifications",
+    disablePush: "Disable",
+    testPush: "Test",
+    pushBlockedInfo: "Notifications are blocked in browser. To enable them, go to browser settings and unblock notifications for this site.",
     
     // Notifications
     notifications: "Notifications",

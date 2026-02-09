@@ -107,6 +107,27 @@ const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
     if (error) {
       console.error("Error sending notification:", error);
     } else {
+      // Also send Web Push notification to household members
+      try {
+        const otherMembers = householdMembers
+          .filter(m => m.id !== profileId)
+          .map(m => m.id);
+
+        if (otherMembers.length > 0) {
+          await supabase.functions.invoke('send-push-notification', {
+            body: {
+              title: sendType === 'walk' ? '🐾 Prośba o spacer' : sendType === 'feed' ? '🍖 Prośba o karmienie' : '📢 Powiadomienie',
+              body: sendNote.trim() || (sendType === 'walk' ? 'Ktoś prosi o wyprowadzenie psa' : 'Ktoś prosi o nakarmienie psa'),
+              type: sendType,
+              url: '/',
+              targetProfileIds: otherMembers
+            }
+          });
+        }
+      } catch (pushError) {
+        console.error('Error sending push notification:', pushError);
+      }
+
       setSendType("walk");
       setSendTime("");
       setSendNote("");
