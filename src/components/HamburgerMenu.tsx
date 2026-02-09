@@ -72,9 +72,9 @@ const FullscreenMenu = ({
           <X className="w-6 h-6 text-foreground" />
         </button>
 
-        {/* Menu items - centered vertically */}
-        <nav className="flex-1 flex flex-col justify-center px-6 py-16 max-w-md mx-auto w-full" role="navigation">
-          <div className="space-y-3">
+        {/* Menu items - scrollable */}
+        <nav className="flex-1 overflow-y-auto px-6 py-20 max-w-md mx-auto w-full" role="navigation">
+          <div className="space-y-3 min-h-full flex flex-col justify-center">
             {menuItems.map(({ id, icon: Icon, label }, index) => {
               const isActive = id === activeTab;
               return (
