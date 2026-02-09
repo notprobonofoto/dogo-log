@@ -72,29 +72,29 @@ const FullscreenMenu = ({
           <X className="w-6 h-6 text-foreground" />
         </button>
 
-        {/* Menu items - scrollable */}
-        <nav className="flex-1 overflow-y-auto px-6 py-20 max-w-md mx-auto w-full" role="navigation">
-          <div className="space-y-3 min-h-full flex flex-col justify-center">
+        {/* Menu items - compact to fit screen */}
+        <nav className="flex-1 flex flex-col justify-center px-4 py-16 max-w-sm mx-auto w-full" role="navigation">
+          <div className="space-y-2">
             {menuItems.map(({ id, icon: Icon, label }, index) => {
               const isActive = id === activeTab;
               return (
                 <button
                   key={id}
                   onClick={() => handleItemClick(id)}
-                  className={`w-full flex items-center gap-5 p-5 rounded-2xl transition-all duration-200 active:scale-[0.98] animate-fade-in-up ${
+                  className={`w-full flex items-center gap-4 p-3 rounded-xl transition-all duration-200 active:scale-[0.98] animate-fade-in-up ${
                     isActive 
-                      ? "bg-primary/15 border-2 border-primary shadow-md" 
-                      : "bg-secondary/50 border-2 border-transparent hover:bg-secondary hover:border-border"
+                      ? "bg-primary/15 border-2 border-primary" 
+                      : "bg-secondary/50 border-2 border-transparent hover:bg-secondary"
                   }`}
-                  style={{ animationDelay: `${index * 40}ms` }}
+                  style={{ animationDelay: `${index * 30}ms` }}
                   aria-current={isActive ? "page" : undefined}
                 >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                     isActive ? "bg-primary/20" : "bg-muted"
                   }`}>
-                    <Icon className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                    <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
                   </div>
-                  <span className={`text-lg font-bold ${isActive ? "text-primary" : "text-foreground"}`}>
+                  <span className={`text-base font-bold ${isActive ? "text-primary" : "text-foreground"}`}>
                     {label}
                   </span>
                 </button>
