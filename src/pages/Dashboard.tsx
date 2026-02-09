@@ -11,6 +11,7 @@ import NewDogsTab from "@/components/tabs/NewDogsTab";
 import NewTravelTab from "@/components/tabs/NewTravelTab";
 import NotificationPanel from "@/components/NotificationPanel";
 import SettingsPanel from "@/components/SettingsPanel";
+import FullscreenMenu from "@/components/HamburgerMenu";
 import { useState } from "react";
 import type { MenuTab } from "@/components/HamburgerMenu";
 
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const { loading } = useApp();
   const [activeTab, setActiveTab] = useState<MenuTab>("home");
   const [extraPanel, setExtraPanel] = useState<ExtraPanel>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   if (loading) {
     return (
@@ -32,26 +34,48 @@ const Dashboard = () => {
   const handleNavigate = (tab: MenuTab) => {
     setActiveTab(tab);
     setExtraPanel(null);
+    setIsMenuOpen(false);
   };
 
   const handleCloseExtra = () => {
     setExtraPanel(null);
   };
 
+  const handleNotificationsClick = () => {
+    setExtraPanel("notifications");
+    setIsMenuOpen(false);
+  };
+
+  const handleSettingsClick = () => {
+    setExtraPanel("settings");
+    setIsMenuOpen(false);
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <PawBackground />
       
-      {/* Top Bar */}
+      {/* Floating Icons */}
       <TopBar
         activeTab={activeTab}
         onNavigate={handleNavigate}
-        onNotificationsClick={() => setExtraPanel("notifications")}
-        onSettingsClick={() => setExtraPanel("settings")}
+        onNotificationsClick={handleNotificationsClick}
+        onSettingsClick={handleSettingsClick}
+        onMenuClick={() => setIsMenuOpen(true)}
       />
 
-      {/* Main content - with top padding for fixed header */}
-      <div className="relative z-10 pt-16">
+      {/* Fullscreen Menu Overlay */}
+      <FullscreenMenu
+        isOpen={isMenuOpen}
+        activeTab={activeTab}
+        onNavigate={handleNavigate}
+        onClose={() => setIsMenuOpen(false)}
+        onNotificationsClick={handleNotificationsClick}
+        onSettingsClick={handleSettingsClick}
+      />
+
+      {/* Main content - with top padding for floating icons */}
+      <div className="relative z-10 pt-20">
         {extraPanel === "notifications" && <NotificationPanel onClose={handleCloseExtra} />}
         {extraPanel === "settings" && <SettingsPanel onClose={handleCloseExtra} />}
         

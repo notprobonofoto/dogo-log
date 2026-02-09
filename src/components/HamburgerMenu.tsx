@@ -1,19 +1,28 @@
-import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Menu, X, Home, CalendarDays, PawPrint, Utensils, Heart, Dog, Plane } from "lucide-react";
+import { X, Home, CalendarDays, PawPrint, Utensils, Heart, Dog, Plane, Bell, Settings } from "lucide-react";
 
 export type MenuTab = "home" | "calendar" | "walks" | "food" | "health" | "dogs" | "travel";
 
-interface HamburgerMenuProps {
+interface FullscreenMenuProps {
+  isOpen: boolean;
   activeTab: MenuTab;
   onNavigate: (tab: MenuTab) => void;
+  onClose: () => void;
+  onNotificationsClick: () => void;
+  onSettingsClick: () => void;
 }
 
-const HamburgerMenu = ({ activeTab, onNavigate }: HamburgerMenuProps) => {
+const FullscreenMenu = ({ 
+  isOpen, 
+  activeTab, 
+  onNavigate, 
+  onClose,
+  onNotificationsClick,
+  onSettingsClick 
+}: FullscreenMenuProps) => {
   const { t } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
 
-  const menuItems: { id: MenuTab; icon: React.ElementType; label: string }[] = [
+  const menuItems: { id: MenuTab | "notifications" | "settings"; icon: React.ElementType; label: string }[] = [
     { id: "home", icon: Home, label: "Start" },
     { id: "calendar", icon: CalendarDays, label: t("calendar") },
     { id: "walks", icon: PawPrint, label: t("walks") },
@@ -21,79 +30,81 @@ const HamburgerMenu = ({ activeTab, onNavigate }: HamburgerMenuProps) => {
     { id: "health", icon: Heart, label: t("health") },
     { id: "dogs", icon: Dog, label: t("dogs") },
     { id: "travel", icon: Plane, label: t("travel") },
+    { id: "notifications", icon: Bell, label: t("notifications") },
+    { id: "settings", icon: Settings, label: t("settings") },
   ];
 
-  const handleNavigate = (tab: MenuTab) => {
-    onNavigate(tab);
-    setIsOpen(false);
+  const handleItemClick = (id: MenuTab | "notifications" | "settings") => {
+    if (id === "notifications") {
+      onNotificationsClick();
+    } else if (id === "settings") {
+      onSettingsClick();
+    } else {
+      onNavigate(id);
+    }
+    onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
-    <>
-      {/* Menu button - positioned by parent */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="p-2 rounded-lg hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-        aria-label="Menu"
-        aria-expanded={isOpen}
-      >
-        <Menu className="w-6 h-6 text-foreground" />
-      </button>
-
-      {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-50 animate-fade-in"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Slide-in menu - full opaque background */}
+    <div 
+      className="fixed inset-0 z-50 animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu nawigacji"
+    >
+      {/* Background overlay */}
       <div 
-        className={`fixed top-0 right-0 h-full w-72 bg-background z-50 shadow-2xl transform transition-transform duration-300 ease-out border-l border-border ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu nawigacji"
-      >
-        {/* Header with close button */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-bold text-foreground">Menu</h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-            aria-label="Zamknij menu"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      
+      {/* Fullscreen menu content */}
+      <div className="absolute inset-0 bg-card flex flex-col animate-slide-up-bounce">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-12 h-12 rounded-full bg-secondary border-2 border-border shadow-lg flex items-center justify-center hover:bg-destructive/10 hover:border-destructive transition-all duration-200 active:scale-95 z-10"
+          aria-label="Zamknij menu"
+        >
+          <X className="w-6 h-6 text-foreground" />
+        </button>
 
-        {/* Menu items */}
-        <nav className="p-4 space-y-2" role="navigation">
-          {menuItems.map(({ id, icon: Icon, label }) => {
-            const isActive = activeTab === id;
-            return (
-              <button
-                key={id}
-                onClick={() => handleNavigate(id)}
-                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-ring ${
-                  isActive 
-                    ? "bg-primary/10 text-primary border-2 border-primary" 
-                    : "bg-secondary hover:bg-secondary/80 text-foreground border-2 border-transparent"
-                }`}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <Icon className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <span className="font-semibold">{label}</span>
-              </button>
-            );
-          })}
+        {/* Menu items - centered vertically */}
+        <nav className="flex-1 flex flex-col justify-center px-6 py-16 max-w-md mx-auto w-full" role="navigation">
+          <div className="space-y-3">
+            {menuItems.map(({ id, icon: Icon, label }, index) => {
+              const isActive = id === activeTab;
+              return (
+                <button
+                  key={id}
+                  onClick={() => handleItemClick(id)}
+                  className={`w-full flex items-center gap-5 p-5 rounded-2xl transition-all duration-200 active:scale-[0.98] animate-fade-in-up ${
+                    isActive 
+                      ? "bg-primary/15 border-2 border-primary shadow-md" 
+                      : "bg-secondary/50 border-2 border-transparent hover:bg-secondary hover:border-border"
+                  }`}
+                  style={{ animationDelay: `${index * 40}ms` }}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    isActive ? "bg-primary/20" : "bg-muted"
+                  }`}>
+                    <Icon className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                  </div>
+                  <span className={`text-lg font-bold ${isActive ? "text-primary" : "text-foreground"}`}>
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </nav>
       </div>
-    </>
+    </div>
   );
 };
 
-export default HamburgerMenu;
+export default FullscreenMenu;
