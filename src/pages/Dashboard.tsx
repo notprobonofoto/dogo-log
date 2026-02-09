@@ -74,8 +74,8 @@ const Dashboard = () => {
         onSettingsClick={handleSettingsClick}
       />
 
-      {/* Main content - with top padding for floating icons */}
-      <div className="relative z-10 pt-20">
+      {/* Main content - with top padding to avoid floating icons */}
+      <div className="relative z-10 pt-24">
         {extraPanel === "notifications" && <NotificationPanel onClose={handleCloseExtra} />}
         {extraPanel === "settings" && <SettingsPanel onClose={handleCloseExtra} />}
         

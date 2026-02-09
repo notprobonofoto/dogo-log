@@ -73,7 +73,7 @@ const FullscreenMenu = ({
         </button>
 
         {/* Menu items - compact to fit screen */}
-        <nav className="flex-1 flex flex-col justify-center px-4 py-16 max-w-sm mx-auto w-full" role="navigation">
+        <nav className="flex-1 flex flex-col justify-center px-4 pt-20 pb-8 max-w-sm mx-auto w-full overflow-y-auto" role="navigation">
           <div className="space-y-2">
             {menuItems.map(({ id, icon: Icon, label }, index) => {
               const isActive = id === activeTab;
