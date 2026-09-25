@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polityka prywatności — DogoLog</title>
+<meta name="description" content="Polityka prywatności aplikacji DogoLog — dziennika psa dla całego domu.">
+<meta name="robots" content="index, follow">
+<style>
+  :root {
+    --tlo: #f5f0eb;
+    --karta: #fbf8f5;
+    --tekst: #2c2420;
+    --przygaszony: #6b5d54;
+    --akcent: #a0562a;
+    --linia: #e3d9cf;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --tlo: #1c1815;
+      --karta: #262019;
+      --tekst: #ece5dd;
+      --przygaszony: #a89a8d;
+      --akcent: #d98f4f;
+      --linia: #3a322a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 3rem 1rem 5rem;
+    background: var(--tlo);
+    color: var(--tekst);
+    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  main { max-width: 42rem; margin: 0 auto; }
+
+  h1 {
+    font-size: 1.9rem;
+    line-height: 1.25;
+    margin: 0 0 .5rem;
+  }
+
+  .data {
+    color: var(--przygaszony);
+    font-size: .9rem;
+    margin: 0 0 2.5rem;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    margin: 2.5rem 0 .75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--linia);
+  }
+
+  h2:first-of-type { border-top: 0; padding-top: 0; }
+
+  p, li { color: var(--tekst); }
+  ul { padding-left: 1.25rem; }
+  li { margin-bottom: .4rem; }
+
+  strong { font-weight: 600; }
+
+  a { color: var(--akcent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: .95rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: .6rem .75rem;
+    border-bottom: 1px solid var(--linia);
+    vertical-align: top;
+  }
+
+  th { color: var(--przygaszony); font-weight: 600; }
+
+  .karta {
+    background: var(--karta);
+    border: 1px solid var(--linia);
+    border-radius: .75rem;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .stopka {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--linia);
+    color: var(--przygaszony);
+    font-size: .875rem;
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Polityka prywatności — DogoLog</h1>
+<p class="data">Ostatnia aktualizacja: 25 września 2026</p>
+
+<h2>Kto odpowiada za dane</h2>
+<p>
+  Administratorem danych przetwarzanych w aplikacji DogoLog jest
+  Grzegorz Witt, kontakt:
+  <a href="mailto:notprobonofoto@gmail.com">notprobonofoto@gmail.com</a>.
+</p>
+
+<h2>Jakie dane zbieramy</h2>
+<p>
+  DogoLog <strong>nie wymaga zakładania konta</strong>. Nie prosimy o adres e-mail, numer
+  telefonu ani hasło. Nie logujemy się przez Google ani Facebooka.
+</p>
+<p>Aplikacja przechowuje wyłącznie dane, które sam wprowadzisz:</p>
+<ul>
+  <li><strong>Imię użytkownika</strong> — podawane przy dołączaniu do gospodarstwa domowego, służy do oznaczania, kto dodał dany wpis.</li>
+  <li><strong>Dane psów</strong> — imię, data urodzenia, płeć, rasa, zdjęcia.</li>
+  <li><strong>Wpisy dziennika</strong> — spacery (data, godzina, czas trwania, notatka), karmienia, zdarzenia zdrowotne (wizyty weterynaryjne, szczepienia, waga), wpadki domowe.</li>
+  <li><strong>Ustawienia aplikacji</strong> — wybrany język, godziny przypomnień.</li>
+</ul>
+<p>
+  Dane dotyczą zwierzęcia, nie człowieka. Jedyną informacją o osobie jest imię, które sam
+  podajesz — może to być dowolny pseudonim.
+</p>
+
+<h2>Czego nie zbieramy</h2>
+<ul>
+  <li>Nie zbieramy lokalizacji.</li>
+  <li>Nie zbieramy listy kontaktów, SMS-ów ani historii połączeń.</li>
+  <li>Nie zbieramy identyfikatorów reklamowych.</li>
+  <li>Nie śledzimy zachowania użytkownika w aplikacji ani poza nią.</li>
+  <li>Nie wyświetlamy reklam.</li>
+  <li>Nie sprzedajemy i nie udostępniamy danych podmiotom trzecim w celach marketingowych.</li>
+</ul>
+
+<h2>Gdzie dane są przechowywane</h2>
+<p>
+  Dane trafiają do bazy <strong>Supabase</strong> (infrastruktura hostowana w Unii
+  Europejskiej), która pełni rolę podmiotu przetwarzającego. Połączenie jest szyfrowane
+  (HTTPS).
+</p>
+<p>
+  Ustawienia lokalne (język, godziny przypomnień, identyfikator sesji) zostają na Twoim
+  telefonie i nie są nigdzie wysyłane.
+</p>
+
+<h2>Kto widzi Twoje dane</h2>
+<div class="karta">
+  <p style="margin:0">
+    Dane są widoczne dla osób, które znają <strong>kod Twojego gospodarstwa domowego</strong>
+    — czyli dla domowników, którym ten kod sam przekażesz. Kod pełni rolę klucza dostępu,
+    więc traktuj go jak hasło i nie publikuj go.
+  </p>
+</div>
+
+<h2>Uprawnienia aplikacji</h2>
+<table>
+  <tr><th>Uprawnienie</th><th>Po co</th></tr>
+  <tr><td>Internet</td><td>Synchronizacja wpisów między domownikami</td></tr>
+  <tr><td>Powiadomienia</td><td>Przypomnienia o spacerach i karmieniu, generowane lokalnie na telefonie</td></tr>
+  <tr><td>Wibracje</td><td>Sygnał przy powiadomieniu</td></tr>
+  <tr><td>Uruchomienie po restarcie</td><td>Odtworzenie zaplanowanych przypomnień po ponownym włączeniu telefonu</td></tr>
+  <tr><td>Aparat i galeria</td><td>Dodanie zdjęcia psa — wyłącznie w momencie, gdy sam wybierzesz tę opcję</td></tr>
+</table>
+<p>
+  Aplikacja nie ma dostępu do Twojej galerii w tle. Zdjęcie trafia do bazy tylko wtedy, gdy
+  świadomie je wskażesz.
+</p>
+
+<h2>Powiadomienia</h2>
+<p>
+  Przypomnienia są planowane i wyświetlane <strong>lokalnie przez system Android</strong>.
+  Nie korzystamy z serwera powiadomień push i nie wysyłamy w tym celu żadnych danych na
+  zewnątrz. Godziny przypomnień o spacerach wyliczane są na telefonie z Twojej własnej
+  historii wpisów.
+</p>
+
+<h2>Jak długo przechowujemy dane</h2>
+<p>
+  Dane są przechowywane tak długo, jak istnieje Twoje gospodarstwo domowe. Każdy wpis możesz
+  usunąć samodzielnie w aplikacji — usunięcie jest natychmiastowe i trwałe.
+</p>
+<p>
+  Aby usunąć całe gospodarstwo domowe wraz ze wszystkimi wpisami, napisz na
+  <a href="mailto:notprobonofoto@gmail.com">notprobonofoto@gmail.com</a> i podaj kod
+  gospodarstwa. Usunięcie następuje w ciągu 30 dni.
+</p>
+
+<h2>Twoje prawa (RODO)</h2>
+<p>
+  Masz prawo do dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia
+  przetwarzania oraz przeniesienia. Większość z tych czynności wykonasz samodzielnie
+  w aplikacji. W pozostałych przypadkach napisz na
+  <a href="mailto:notprobonofoto@gmail.com">notprobonofoto@gmail.com</a>.
+</p>
+<p>
+  Przysługuje Ci też prawo wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych
+  (ul. Stawki 2, 00-193 Warszawa).
+</p>
+
+<h2>Dzieci</h2>
+<p>
+  Aplikacja nie jest kierowana do dzieci poniżej 13. roku życia i nie zbiera świadomie ich
+  danych.
+</p>
+
+<h2>Zmiany polityki</h2>
+<p>
+  O istotnych zmianach poinformujemy w aplikacji przy aktualizacji. Data ostatniej zmiany
+  jest podana na początku dokumentu.
+</p>
+
+<h2>Kontakt</h2>
+<p><a href="mailto:notprobonofoto@gmail.com">notprobonofoto@gmail.com</a></p>
+
+<p class="stopka">DogoLog — dziennik Twojego psa</p>
+
+</main>
+</body>
+</html>
